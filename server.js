@@ -27,9 +27,11 @@ if (!supabaseUrl || !supabaseServiceKey) {
   console.error('Supabase no está configurado correctamente. Verifica SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY.');
 }
 
-const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: { persistSession: false },
-});
+const supabase = (supabaseUrl && supabaseServiceKey)
+  ? createClient(supabaseUrl, supabaseServiceKey, {
+      auth: { persistSession: false },
+    })
+  : null;
 
 const adminGuard = (req, res, next) => {
   const token = req.headers['x-admin-token'];
@@ -47,6 +49,42 @@ const defaultEnvioConfig = () => ({
 });
 
 const safeNumber = (value) => Number.parseFloat(value || 0) || 0;
+
+const demoProducts = () => ([
+  {
+    id: 'demo-box',
+    nombre: 'Caja Atelier Signature',
+    descripcion: 'Incluye flores preservadas, vela y tarjeta en papel algodón.',
+    precio: 54990,
+    imagen_url: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=800&q=60',
+    categoria: 'Signature',
+    stock: 10,
+    descuento: null,
+    es_combo: true,
+  },
+  {
+    id: 'demo-champagne',
+    nombre: 'Burbuja & Oro',
+    descripcion: 'Espumante premium + copas grabadas.',
+    precio: 78990,
+    imagen_url: 'https://images.unsplash.com/photo-1519677100203-a0e668c92439?auto=format&fit=crop&w=800&q=60',
+    categoria: 'Celebración',
+    stock: 8,
+    descuento: null,
+    es_combo: false,
+  },
+  {
+    id: 'demo-arte',
+    nombre: 'Canvas Personalizado',
+    descripcion: 'Ilustración minimalista enmarcada lista para regalar.',
+    precio: 63990,
+    imagen_url: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=60',
+    categoria: 'Arte',
+    stock: 5,
+    descuento: 0,
+    es_combo: false,
+  },
+]);
 
 const uploadPersonalizationImage = async (base64, rut) => {
   if (!base64) return null;
@@ -81,6 +119,10 @@ const uploadPersonalizationImage = async (base64, rut) => {
 };
 
 app.get('/api/productos', async (req, res) => {
+  if (!supabase) {
+    return res.json(demoProducts());
+  }
+
   const { data, error } = await supabase
     .from('productos')
     .select('id,nombre,descripcion,precio,imagen_url,categoria,stock,descuento,es_combo')
@@ -88,10 +130,11 @@ app.get('/api/productos', async (req, res) => {
     .order('nombre', { ascending: true });
 
   if (error) {
-    return res.status(500).json({ error: 'No se pudieron obtener los productos' });
+    console.error('Supabase productos error', error);
+    return res.json(demoProducts());
   }
 
-  return res.json(data || []);
+  return res.json(data || demoProducts());
 });
 
 app.get('/api/config-envios', async (req, res) => {

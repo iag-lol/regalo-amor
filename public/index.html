@@ -3,115 +3,170 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Atelier de Regalos Personalizados</title>
+    <title>Atelier Blanc · Regalos Personalizados</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <header class="site-header">
-      <div class="logo">Atelier · Personalización fina</div>
-      <button class="admin-btn" id="adminBtn">Admin</button>
+    <header class="main-header">
+      <div class="brand">
+        <span class="brand-mark"></span>
+        Atelier Blanc
+      </div>
+      <nav>
+        <a href="#coleccion">Colección</a>
+        <a href="#experiencia">Experiencia</a>
+        <a href="#destacados">Destacados</a>
+      </nav>
+      <button class="ghost-btn" id="adminBtn">Panel</button>
     </header>
 
     <section class="hero">
-      <div>
-        <p class="hero-kicker">Regalos únicos hechos a medida</p>
-        <h1>Personaliza emociones, crea recuerdos elegantes.</h1>
-        <p>Selecciona, personaliza y envía detalles inolvidables con diseño premium, grabados y empaques exclusivos.</p>
-        <a class="cta" href="#productos">Explorar colección</a>
+      <div class="hero-copy">
+        <p class="eyebrow">Personalización de lujo · Dispatch same day</p>
+        <h1>Regalos hechos a medida con precisión de estudio creativo.</h1>
+        <p>Combinamos objetos curados, impresión fina y empaques impecables para que puedas regalar como una marca de lujo. Diseña, agrega tu mensaje y agenda la entrega con un par de toques.</p>
+        <div class="hero-cta">
+          <a class="primary-btn" href="#coleccion">Ver colección</a>
+          <button class="text-btn" id="scrollDestacados">Ver destacados</button>
+        </div>
       </div>
-      <div class="hero-card">
-        <p>Servicio express en Santiago</p>
-        <h3>Agenda tu entrega desde $4.990</h3>
-        <ul>
-          <li>Curaduría de productos boutique</li>
-          <li>Diseño gráfico personalizado</li>
-          <li>Seguimiento y confirmación por WhatsApp</li>
-        </ul>
-      </div>
-    </section>
-
-    <section class="carousel" id="destacados">
-      <button class="carousel-nav" id="prevHighlight" aria-label="Anterior">‹</button>
-      <div class="carousel-track" id="carouselTrack"></div>
-      <button class="carousel-nav" id="nextHighlight" aria-label="Siguiente">›</button>
-    </section>
-
-    <main class="layout" id="productos">
-      <section class="product-list">
-        <div class="section-header">
+      <div class="hero-showcase">
+        <div class="hero-card large">
+          <p>Entrega programada</p>
+          <h3>Desde $4.990</h3>
+          <span>Servicio express en RM</span>
+        </div>
+        <div class="hero-card stack">
           <div>
-            <h2>Nuestra colección</h2>
-            <p>Selecciona tus piezas favoritas y combínalas para crear la experiencia perfecta.</p>
+            <h4>+1800 recuerdos entregados</h4>
+            <p>Experiencias personalizadas desde 2018.</p>
           </div>
-          <div class="filters">
-            <input type="search" id="searchProducto" placeholder="Buscar producto" />
-            <select id="categoriaFiltro">
-              <option value="">Todas las categorías</option>
-            </select>
+          <div>
+            <h4>Studio creativo</h4>
+            <p>Tipografía, ilustración y foil stamping.</p>
           </div>
         </div>
-        <div class="grid" id="listaProductos"></div>
-      </section>
+      </div>
+    </section>
 
-      <aside class="sidebar">
-        <section class="cart" id="carritoPanel">
-          <div class="cart-header">
-            <h3>Tu carrito</h3>
-            <span id="cartCount">0 artículos</span>
-          </div>
-          <div class="cart-items" id="cartItems"></div>
-          <div class="cart-total">
-            <p>Subtotal</p>
-            <p id="cartTotal">$0</p>
-          </div>
-        </section>
+    <section class="highlight" id="destacados">
+      <article>
+        <h3>Curaduría Boutique</h3>
+        <p>Piezas limitadas y colaboraciones exclusivas con marcas de autor.</p>
+      </article>
+      <article>
+        <h3>Personalización guiada</h3>
+        <p>Diseñadores senior acompañan tu mensaje, imagen o monograma.</p>
+      </article>
+      <article>
+        <h3>Seguimiento humano</h3>
+        <p>Nos comunicamos por WhatsApp para confirmar cada detalle de la entrega.</p>
+      </article>
+    </section>
 
-        <section class="client-form">
-          <h3>Datos de envío</h3>
-          <form id="pedidoForm">
-            <label>Nombre completo<input type="text" name="nombre" required /></label>
-            <label>RUT<input type="text" name="rut" required /></label>
-            <label>Correo electrónico<input type="email" name="email" required /></label>
-            <label>Dirección<input type="text" name="direccion" required /></label>
-            <label>Comuna<input type="text" name="comuna" required list="comunasList" /></label>
-            <datalist id="comunasList"></datalist>
-            <label>Teléfono WhatsApp<input type="tel" name="telefonoWsp" required /></label>
-            <label>Teléfono de llamada<input type="tel" name="telefonoLlamada" required /></label>
-            <label class="checkbox">
-              <input type="checkbox" name="telefonoEsMismo" /> ¿Es el mismo número?
-            </label>
-            <label>Día de envío<select name="fechaEnvio" id="diasEnvio" required></select></label>
-            <label>Horario<select name="horarioEnvio" id="horariosEnvio" required></select></label>
-          </form>
-        </section>
+    <section class="product-section" id="coleccion">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Colección permanente</p>
+          <h2>Selecciona los objetos que quieres regalar</h2>
+        </div>
+        <div class="filters">
+          <input type="search" id="searchProducto" placeholder="Buscar producto" />
+          <select id="categoriaFiltro">
+            <option value="">Todas las categorías</option>
+          </select>
+        </div>
+      </div>
+      <p class="section-subtitle">Una vez agregues tus favoritos podrás personalizar empaque, mensaje y confirmar el envío.</p>
+      <div class="product-grid" id="listaProductos"></div>
+      <div class="cta-row">
+        <button class="primary-btn disabled" id="openCheckout" disabled>Personalizar pedido</button>
+      </div>
+    </section>
 
-        <section class="personalizacion">
-          <h3>Personalización premium</h3>
-          <label>Mensaje especial<textarea id="mensajePersonalizacion" maxlength="240" placeholder="Cuéntanos el texto o dedicatoria..."></textarea></label>
-          <label>Tipo de diseño
-            <select id="tipoDiseno">
-              <option value="solo_texto">Solo texto elegante</option>
-              <option value="texto_y_imagen">Texto + imagen</option>
-              <option value="ilustracion_personalizada">Ilustración personalizada</option>
-            </select>
-          </label>
-          <label>Sube inspiración (opcional)<input type="file" id="imagenPersonalizacion" accept="image/*" /></label>
-          <div class="image-preview" id="previewImagen"></div>
-        </section>
+    <section class="experience" id="experiencia">
+      <div>
+        <p class="eyebrow">Fidelidad & beneficios</p>
+        <h3>Acumula puntos para upgrades de empaque y diseño editorial.</h3>
+        <p>Nuestros clientes frecuentes desbloquean papel algodón, foil metálico y asesorías privadas. Cada compra suma.</p>
+        <p class="points" id="puntosCliente">Tus puntos aparecerán cuando confirmes un pedido.</p>
+      </div>
+      <div class="experience-card">
+        <h4>¿Cómo funciona?</h4>
+        <ul>
+          <li>Agrega productos al carrito.</li>
+          <li>Personaliza mensaje e imagen en la ventana de checkout.</li>
+          <li>Paga con Flow y agenda tu entrega.</li>
+        </ul>
+        <p>Te contactamos por WhatsApp para mostrarte avances del diseño.</p>
+      </div>
+    </section>
 
-        <section class="fidelidad" id="fidelidad">
-          <h3>Programa de fidelidad</h3>
-          <p>Acumula puntos por cada compra para upgrades de empaque, tarjetas caligrafiadas y envíos express.</p>
-          <p class="puntos" id="puntosCliente">Tus puntos acumulados aparecerán aquí.</p>
-        </section>
+    <div class="floating-cart" id="floatingCart">
+      <div>
+        <span id="cartCount">0 productos</span>
+        <small>Curaduría en progreso</small>
+      </div>
+      <strong id="cartTotal">$0</strong>
+    </div>
 
-        <button class="cta" id="btnConfirmar">Confirmar pedido</button>
-        <p class="nota">Al confirmar serás redirigido a Flow para completar el pago.</p>
-      </aside>
-    </main>
+    <div class="overlay" id="checkoutOverlay">
+      <div class="overlay-panel">
+        <button class="close" id="closeOverlay">×</button>
+        <div class="overlay-grid">
+          <section class="review-panel">
+            <header>
+              <p class="eyebrow">Tu selección</p>
+              <h3>Resumen del pedido</h3>
+            </header>
+            <div class="cart-items" id="cartItems"></div>
+            <div class="cart-total">
+              <span>Subtotal</span>
+              <strong id="checkoutTotal">$0</strong>
+            </div>
+            <button class="ghost-btn full" id="clearCart">Vaciar carrito</button>
+          </section>
+          <section class="form-panel">
+            <header>
+              <p class="eyebrow">Datos y personalización</p>
+              <h3>Completa los detalles</h3>
+            </header>
+            <form id="pedidoForm">
+              <div class="form-grid">
+                <label>Nombre completo<input type="text" name="nombre" required /></label>
+                <label>RUT<input type="text" name="rut" required /></label>
+                <label>Correo electrónico<input type="email" name="email" required /></label>
+                <label>Dirección<input type="text" name="direccion" required /></label>
+                <label>Comuna<input type="text" name="comuna" required list="comunasList" /></label>
+                <label>Teléfono WhatsApp<input type="tel" name="telefonoWsp" required /></label>
+                <label>Teléfono de llamada<input type="tel" name="telefonoLlamada" required /></label>
+                <label class="checkbox">
+                  <input type="checkbox" name="telefonoEsMismo" /> ¿Es el mismo número?
+                </label>
+                <label>Día de envío<select name="fechaEnvio" id="diasEnvio" required></select></label>
+                <label>Horario<select name="horarioEnvio" id="horariosEnvio" required></select></label>
+              </div>
+              <datalist id="comunasList"></datalist>
+              <label>Mensaje especial<textarea id="mensajePersonalizacion" maxlength="240" placeholder="Escribe tu dedicatoria..."></textarea></label>
+              <label>Tipo de diseño
+                <select id="tipoDiseno">
+                  <option value="solo_texto">Solo texto elegante</option>
+                  <option value="texto_y_imagen">Texto + imagen</option>
+                  <option value="ilustracion_personalizada">Ilustración personalizada</option>
+                </select>
+              </label>
+              <label>Sube inspiración (opcional)<input type="file" id="imagenPersonalizacion" accept="image/*" /></label>
+              <div class="image-preview" id="previewImagen"></div>
+              <button type="button" class="primary-btn full" id="btnConfirmar">Confirmar y pagar</button>
+              <p class="nota">Serás redirigido a Flow para completar el pago.</p>
+            </form>
+          </section>
+        </div>
+      </div>
+    </div>
 
     <div class="modal" id="adminModal">
       <div class="modal-content">

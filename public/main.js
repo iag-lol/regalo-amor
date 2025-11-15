@@ -15,7 +15,12 @@ const elements = {
   searchProducto: document.getElementById('searchProducto'),
   cartItems: document.getElementById('cartItems'),
   cartTotal: document.getElementById('cartTotal'),
+  checkoutTotal: document.getElementById('checkoutTotal'),
   cartCount: document.getElementById('cartCount'),
+  openCheckout: document.getElementById('openCheckout'),
+  checkoutOverlay: document.getElementById('checkoutOverlay'),
+  closeOverlay: document.getElementById('closeOverlay'),
+  clearCart: document.getElementById('clearCart'),
   btnConfirmar: document.getElementById('btnConfirmar'),
   pedidoForm: document.getElementById('pedidoForm'),
   diasEnvio: document.getElementById('diasEnvio'),
@@ -43,9 +48,8 @@ const elements = {
   siiInfo: document.getElementById('siiInfo'),
   marcarSii: document.getElementById('marcarSii'),
   adminModalContent: document.querySelector('#adminModal .modal-content'),
-  carouselTrack: document.getElementById('carouselTrack'),
-  prevHighlight: document.getElementById('prevHighlight'),
-  nextHighlight: document.getElementById('nextHighlight'),
+  floatingCart: document.getElementById('floatingCart'),
+  scrollDestacados: document.getElementById('scrollDestacados'),
 };
 
 const renderProductos = (productos) => {
@@ -69,20 +73,6 @@ const renderProductos = (productos) => {
       <button class="cta" data-producto="${producto.id}">Agregar</button>
     `;
     elements.listaProductos.append(card);
-  });
-};
-
-const renderCarousel = (productos) => {
-  elements.carouselTrack.innerHTML = '';
-  (productos.slice(0, 6)).forEach((producto) => {
-    const card = document.createElement('article');
-    card.className = 'carousel-card';
-    card.innerHTML = `
-      <img src="${producto.imagen_url || 'https://via.placeholder.com/600x400?text=Regalo'}" alt="${producto.nombre}" />
-      <h4>${producto.nombre}</h4>
-      <p>${currency(producto.precio)}</p>
-    `;
-    elements.carouselTrack.append(card);
   });
 };
 
@@ -139,6 +129,10 @@ const updateQuantity = (productoId, delta) => {
 const renderCart = () => {
   elements.cartItems.innerHTML = '';
   let total = 0;
+  if (!state.carrito.length) {
+    elements.cartItems.innerHTML = '<p class="nota">Aún no agregas productos.</p>';
+  }
+
   state.carrito.forEach((item) => {
     total += item.cantidad * item.precioUnitario;
     const row = document.createElement('div');
@@ -149,14 +143,22 @@ const renderCart = () => {
         <p>${currency(item.precioUnitario)} x ${item.cantidad}</p>
       </div>
       <div class="cart-actions">
-        <button data-action="dec" data-id="${item.productoId}">-</button>
-        <button data-action="inc" data-id="${item.productoId}">+</button>
+        <button data-action="dec" data-id="${item.productoId}" aria-label="Restar">-</button>
+        <button data-action="inc" data-id="${item.productoId}" aria-label="Sumar">+</button>
       </div>
     `;
     elements.cartItems.append(row);
   });
+
+  const totalItems = state.carrito.reduce((acc, item) => acc + item.cantidad, 0);
   elements.cartTotal.textContent = currency(total);
-  elements.cartCount.textContent = `${state.carrito.reduce((acc, item) => acc + item.cantidad, 0)} artículos`;
+  if (elements.checkoutTotal) elements.checkoutTotal.textContent = currency(total);
+  elements.cartCount.textContent = `${totalItems} ${totalItems === 1 ? 'producto' : 'productos'}`;
+  const disabled = state.carrito.length === 0;
+  if (elements.openCheckout) {
+    elements.openCheckout.disabled = disabled;
+    elements.openCheckout.classList.toggle('disabled', disabled);
+  }
 };
 
 const loadProductos = async () => {
@@ -165,7 +167,6 @@ const loadProductos = async () => {
     const data = await response.json();
     state.productos = data;
     renderProductos(data);
-    renderCarousel(data);
     updateCategorias(data);
   } catch (error) {
     console.error('No se pudieron cargar productos', error);
@@ -434,6 +435,37 @@ const attachEvents = () => {
   elements.btnConfirmar.addEventListener('click', submitPedido);
   elements.imagenPersonalizacion.addEventListener('change', handleImageUpload);
 
+  if (elements.openCheckout) {
+    elements.openCheckout.addEventListener('click', () => {
+      if (!state.carrito.length) return;
+      elements.checkoutOverlay.classList.add('open');
+    });
+  }
+  if (elements.closeOverlay) {
+    elements.closeOverlay.addEventListener('click', () => {
+      elements.checkoutOverlay.classList.remove('open');
+    });
+  }
+  if (elements.checkoutOverlay) {
+    elements.checkoutOverlay.addEventListener('click', (event) => {
+      if (event.target === elements.checkoutOverlay) {
+        elements.checkoutOverlay.classList.remove('open');
+      }
+    });
+  }
+  if (elements.clearCart) {
+    elements.clearCart.addEventListener('click', () => {
+      state.carrito = [];
+      renderCart();
+    });
+  }
+  if (elements.floatingCart) {
+    elements.floatingCart.addEventListener('click', () => {
+      if (!state.carrito.length) return;
+      elements.checkoutOverlay.classList.add('open');
+    });
+  }
+
   elements.adminBtn.addEventListener('click', openAdminModal);
   elements.closeAdmin.addEventListener('click', closeAdminModal);
   elements.adminModal.addEventListener('click', (event) => {
@@ -460,11 +492,8 @@ const attachEvents = () => {
       elements.pedidoForm.telefonoLlamada.value = elements.pedidoForm.telefonoWsp.value;
     }
   });
-  elements.prevHighlight.addEventListener('click', () => {
-    elements.carouselTrack.scrollBy({ left: -300, behavior: 'smooth' });
-  });
-  elements.nextHighlight.addEventListener('click', () => {
-    elements.carouselTrack.scrollBy({ left: 300, behavior: 'smooth' });
+  elements.scrollDestacados?.addEventListener('click', () => {
+    document.querySelector('#destacados')?.scrollIntoView({ behavior: 'smooth' });
   });
 };
 
