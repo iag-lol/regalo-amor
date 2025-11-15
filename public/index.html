@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carro de Prueba (Flow)</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      background: #f4f6fb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+      padding: 32px;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    h1 {
+      margin-top: 0;
+      color: #0f172a;
+    }
+
+    .product-name {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .price {
+      color: #475569;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #0f172a;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #cbd5f5;
+      font-size: 1rem;
+      margin-bottom: 18px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .total {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+      color: #0f172a;
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      border-radius: 999px;
+      padding: 14px 20px;
+      font-size: 1rem;
+      font-weight: 600;
+      background: #2563eb;
+      color: #fff;
+      cursor: pointer;
+      transition: transform 0.1s ease, background 0.2s ease;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    #status {
+      margin-top: 16px;
+      min-height: 20px;
+      color: #dc2626;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Carro de Prueba (Flow)</h1>
+    <div class="product">
+      <div class="product-name">Botella personalizada (demo)</div>
+      <div class="price">Precio unitario: $100 CLP</div>
+    </div>
+
+    <label for="quantity">Cantidad</label>
+    <input type="number" id="quantity" min="1" value="1" />
+
+    <label for="email">Correo electrónico</label>
+    <input type="email" id="email" placeholder="tu-correo@ejemplo.com" />
+
+    <div class="total">Total: <span id="total">$100 CLP</span></div>
+
+    <button id="payBtn">Pagar con Flow</button>
+    <div id="status"></div>
+  </div>
+
+  <script>
+    const UNIT_PRICE = 100;
+    const quantityInput = document.getElementById('quantity');
+    const emailInput = document.getElementById('email');
+    const totalEl = document.getElementById('total');
+    const statusEl = document.getElementById('status');
+    const payBtn = document.getElementById('payBtn');
+
+    const formatCLP = (value) => `$${value.toLocaleString('es-CL')} CLP`;
+
+    const updateTotal = () => {
+      let qty = parseInt(quantityInput.value, 10);
+      if (!Number.isInteger(qty) || qty < 1) {
+        qty = 1;
+      }
+      quantityInput.value = qty;
+      totalEl.textContent = formatCLP(qty * UNIT_PRICE);
+    };
+
+    quantityInput.addEventListener('input', updateTotal);
+    updateTotal();
+
+    payBtn.addEventListener('click', async () => {
+      const qty = parseInt(quantityInput.value, 10);
+      const email = emailInput.value.trim();
+
+      if (!email) {
+        statusEl.textContent = 'Por favor, ingresa tu correo electrónico.';
+        return;
+      }
+
+      statusEl.style.color = '#475569';
+      statusEl.textContent = 'Creando orden en Flow...';
+
+      try {
+        const response = await fetch('/api/orden', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quantity: qty, email })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.ok) {
+          statusEl.textContent = 'Redirigiendo a Flow...';
+          window.location.href = data.urlPago;
+        } else {
+          statusEl.style.color = '#dc2626';
+          statusEl.textContent = data?.message || 'No pudimos crear la orden.';
+        }
+      } catch (err) {
+        statusEl.style.color = '#dc2626';
+        statusEl.textContent = 'Error inesperado. Intenta nuevamente.';
+      }
+    });
+  </script>
+</body>
+</html>
