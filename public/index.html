@@ -18,52 +18,49 @@
       <nav>
         <a href="#coleccion">Colección</a>
         <a href="#experiencia">Experiencia</a>
-        <a href="#destacados">Destacados</a>
+        <a href="#atelierLab">Atelier Lab</a>
+        <a href="#faq">FAQ</a>
       </nav>
-      <button class="ghost-btn" id="adminBtn">Panel</button>
+      <div class="header-actions">
+        <button class="ghost-btn" id="adminBtn">Panel</button>
+        <button class="primary-btn" id="openCheckout" disabled>Personalizar</button>
+      </div>
     </header>
 
     <section class="hero">
       <div class="hero-copy">
-        <p class="eyebrow">Personalización de lujo · Dispatch same day</p>
-        <h1>Regalos hechos a medida con precisión de estudio creativo.</h1>
-        <p>Combinamos objetos curados, impresión fina y empaques impecables para que puedas regalar como una marca de lujo. Diseña, agrega tu mensaje y agenda la entrega con un par de toques.</p>
+        <p class="eyebrow">Hecho en Santiago · Envíos el mismo día</p>
+        <h1>Colecciones verticales que elevan cada celebración.</h1>
+        <p>Curamos objetos de autor, trabajamos ilustraciones exclusivas y coordinamos tu entrega con precisión de estudio creativo. Diseña tu regalo con la misma elegancia con la que Apple lanza un producto.</p>
         <div class="hero-cta">
-          <a class="primary-btn" href="#coleccion">Ver colección</a>
+          <a class="primary-btn" href="#coleccion">Explorar colección</a>
           <button class="text-btn" id="scrollDestacados">Ver destacados</button>
         </div>
       </div>
-      <div class="hero-showcase">
-        <div class="hero-card large">
-          <p>Entrega programada</p>
-          <h3>Desde $4.990</h3>
-          <span>Servicio express en RM</span>
-        </div>
-        <div class="hero-card stack">
-          <div>
-            <h4>+1800 recuerdos entregados</h4>
-            <p>Experiencias personalizadas desde 2018.</p>
-          </div>
-          <div>
-            <h4>Studio creativo</h4>
-            <p>Tipografía, ilustración y foil stamping.</p>
-          </div>
-        </div>
+      <div class="hero-gallery">
+        <figure>
+          <img src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=600&q=60" alt="Caja personalizada" />
+          <figcaption>Sets verticales con flores preservadas.</figcaption>
+        </figure>
+        <figure>
+          <img src="https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=600&q=60" alt="Champagne personalizado" />
+          <figcaption>Grabados, foil y envoltorios a medida.</figcaption>
+        </figure>
       </div>
     </section>
 
-    <section class="highlight" id="destacados">
+    <section class="capsule-grid" id="destacados">
       <article>
-        <h3>Curaduría Boutique</h3>
-        <p>Piezas limitadas y colaboraciones exclusivas con marcas de autor.</p>
+        <h3>Curaduría de autor</h3>
+        <p>Trabajamos con perfumistas, chocolaterías bean-to-bar y estudios de papel artesanal.</p>
       </article>
       <article>
-        <h3>Personalización guiada</h3>
-        <p>Diseñadores senior acompañan tu mensaje, imagen o monograma.</p>
+        <h3>Diseño editorial</h3>
+        <p>Tipografías exclusivas, monogramas y control de color aprobado por directores de arte.</p>
       </article>
       <article>
-        <h3>Seguimiento humano</h3>
-        <p>Nos comunicamos por WhatsApp para confirmar cada detalle de la entrega.</p>
+        <h3>Logística boutique</h3>
+        <p>Seguimiento humano y confirmaciones por WhatsApp antes de despachar.</p>
       </article>
     </section>
 
@@ -71,7 +68,7 @@
       <div class="section-head">
         <div>
           <p class="eyebrow">Colección permanente</p>
-          <h2>Selecciona los objetos que quieres regalar</h2>
+          <h2>Selecciona hasta cinco piezas por experiencia</h2>
         </div>
         <div class="filters">
           <input type="search" id="searchProducto" placeholder="Buscar producto" />
@@ -80,28 +77,68 @@
           </select>
         </div>
       </div>
-      <p class="section-subtitle">Una vez agregues tus favoritos podrás personalizar empaque, mensaje y confirmar el envío.</p>
+      <p class="section-subtitle">Imágenes verticales pensadas para destacar packaging, textura y escala. Al agregar productos podrás abrir el estudio de personalización para completar tu entrega.</p>
       <div class="product-grid" id="listaProductos"></div>
       <div class="cta-row">
-        <button class="primary-btn disabled" id="openCheckout" disabled>Personalizar pedido</button>
+        <p>¿Listo para personalizar? Usa el botón “Personalizar” del header para abrir la ventana Atelier Lab.</p>
       </div>
     </section>
 
     <section class="experience" id="experiencia">
       <div>
-        <p class="eyebrow">Fidelidad & beneficios</p>
-        <h3>Acumula puntos para upgrades de empaque y diseño editorial.</h3>
-        <p>Nuestros clientes frecuentes desbloquean papel algodón, foil metálico y asesorías privadas. Cada compra suma.</p>
-        <p class="points" id="puntosCliente">Tus puntos aparecerán cuando confirmes un pedido.</p>
+        <p class="eyebrow">Programa de fidelidad</p>
+        <h3>Acumula puntos Atelier para upgrades de empaque, impresión en foil o envíos express.</h3>
+        <p>Guardamos tu historial por RUT y sumamos puntos cada vez que confirmas un pedido. Puedes canjearlos por papel algodón, tarjetas caligrafiadas o ilustraciones exclusivas.</p>
+        <p class="points" id="puntosCliente">Tus puntos aparecerán aquí luego de pagar.</p>
       </div>
       <div class="experience-card">
-        <h4>¿Cómo funciona?</h4>
-        <ul>
-          <li>Agrega productos al carrito.</li>
-          <li>Personaliza mensaje e imagen en la ventana de checkout.</li>
-          <li>Paga con Flow y agenda tu entrega.</li>
-        </ul>
-        <p>Te contactamos por WhatsApp para mostrarte avances del diseño.</p>
+        <h4>Workflow</h4>
+        <ol>
+          <li>Curar: selecciona tus piezas favoritas (máximo 5 por envío).</li>
+          <li>Personalizar: mensaje, ilustración y referencia visual.</li>
+          <li>Confirmar: Flow envía la boleta y coordinamos la entrega.</li>
+        </ol>
+        <p>Todo el proceso se acompaña por WhatsApp con avances de diseño.</p>
+      </div>
+    </section>
+
+    <section class="atelier-lab" id="atelierLab">
+      <header>
+        <p class="eyebrow">Atelier Lab</p>
+        <h2>Personalización inmersiva</h2>
+        <p>Una vez cierres tu carrito, se abre una ventana inspirada en los paneles de macOS para completar cada detalle.</p>
+      </header>
+      <div class="lab-grid">
+        <article>
+          <h4>Mensaje</h4>
+          <p>Limitamos a 240 caracteres para mantener la composición perfecta.</p>
+        </article>
+        <article>
+          <h4>Ilustración o foto</h4>
+          <p>Sube uno o varios referentes en vertical; se almacenan seguros en Supabase.</p>
+        </article>
+        <article>
+          <h4>Agenda</h4>
+          <p>Solo mostramos los días y horarios que cargas en Configuración de envíos.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="faq" id="faq">
+      <h3>Preguntas frecuentes</h3>
+      <div class="faq-grid">
+        <article>
+          <h5>¿Cuánto tarda el diseño?</h5>
+          <p>Enviamos boceto digital en 2 horas hábiles vía WhatsApp.</p>
+        </article>
+        <article>
+          <h5>¿Puedo repetir pedidos?</h5>
+          <p>Duplicamos tu carrito desde el panel admin y reusamos ilustraciones.</p>
+        </article>
+        <article>
+          <h5>¿Cómo monitorean el stock?</h5>
+          <p>El panel muestra alertas en rojo cuando un producto baja de 5 unidades.</p>
+        </article>
       </div>
     </section>
 
@@ -116,10 +153,10 @@
     <div class="overlay" id="checkoutOverlay">
       <div class="overlay-panel">
         <button class="close" id="closeOverlay">×</button>
-        <div class="overlay-grid">
-          <section class="review-panel">
+        <div class="checkout-stack">
+          <section class="pane review">
             <header>
-              <p class="eyebrow">Tu selección</p>
+              <p class="eyebrow">Selección</p>
               <h3>Resumen del pedido</h3>
             </header>
             <div class="cart-items" id="cartItems"></div>
@@ -129,10 +166,10 @@
             </div>
             <button class="ghost-btn full" id="clearCart">Vaciar carrito</button>
           </section>
-          <section class="form-panel">
+          <section class="pane form">
             <header>
-              <p class="eyebrow">Datos y personalización</p>
-              <h3>Completa los detalles</h3>
+              <p class="eyebrow">Personalización</p>
+              <h3>Completa los datos</h3>
             </header>
             <form id="pedidoForm">
               <div class="form-grid">
@@ -150,16 +187,18 @@
                 <label>Horario<select name="horarioEnvio" id="horariosEnvio" required></select></label>
               </div>
               <datalist id="comunasList"></datalist>
-              <label>Mensaje especial<textarea id="mensajePersonalizacion" maxlength="240" placeholder="Escribe tu dedicatoria..."></textarea></label>
-              <label>Tipo de diseño
-                <select id="tipoDiseno">
-                  <option value="solo_texto">Solo texto elegante</option>
-                  <option value="texto_y_imagen">Texto + imagen</option>
-                  <option value="ilustracion_personalizada">Ilustración personalizada</option>
-                </select>
-              </label>
-              <label>Sube inspiración (opcional)<input type="file" id="imagenPersonalizacion" accept="image/*" /></label>
-              <div class="image-preview" id="previewImagen"></div>
+              <div class="lab-fields">
+                <label>Mensaje especial<textarea id="mensajePersonalizacion" maxlength="240" placeholder="Dedicatoria elegante"></textarea></label>
+                <label>Tipo de diseño
+                  <select id="tipoDiseno">
+                    <option value="solo_texto">Solo texto</option>
+                    <option value="texto_y_imagen">Texto + imagen</option>
+                    <option value="ilustracion_personalizada">Ilustración personalizada</option>
+                  </select>
+                </label>
+                <label>Sube inspiración (vertical)<input type="file" id="imagenPersonalizacion" accept="image/*" /></label>
+                <div class="image-preview" id="previewImagen"></div>
+              </div>
               <button type="button" class="primary-btn full" id="btnConfirmar">Confirmar y pagar</button>
               <p class="nota">Serás redirigido a Flow para completar el pago.</p>
             </form>
@@ -173,18 +212,26 @@
         <button class="close" id="closeAdmin">×</button>
         <div id="adminLogin">
           <h3>Panel administrativo</h3>
+          <p>Controla stock, pedidos diarios y métricas tributarias.</p>
           <label>Contraseña<input type="password" id="adminPassword" /></label>
-          <button class="cta" id="adminLoginBtn">Ingresar</button>
+          <button class="primary-btn full" id="adminLoginBtn">Ingresar</button>
           <p class="error" id="adminError"></p>
         </div>
         <div id="adminPanel" class="admin-panel hidden">
+          <header class="admin-head">
+            <div>
+              <p class="eyebrow">Dashboard</p>
+              <h3>Centro de operaciones</h3>
+            </div>
+            <button class="ghost-btn" id="refreshAdmin">Actualizar</button>
+          </header>
           <div class="admin-grid">
             <section>
-              <h4>Resumen de hoy</h4>
+              <h4>Pedidos de hoy</h4>
               <ul id="pedidosHoy"></ul>
             </section>
             <section>
-              <h4>Stock y bajo stock</h4>
+              <h4>Stock y alertas</h4>
               <table>
                 <thead>
                   <tr><th>Producto</th><th>Stock</th></tr>
@@ -203,7 +250,7 @@
                 <label>Horarios<textarea name="horarios"></textarea></label>
                 <label>Costo base<input type="number" name="costo" min="0" /></label>
                 <label>Comunas<textarea name="comunas"></textarea></label>
-                <button class="cta" type="submit">Guardar</button>
+                <button class="primary-btn" type="submit">Guardar</button>
                 <p class="status" id="configStatus"></p>
               </form>
             </section>
@@ -214,24 +261,14 @@
             <section>
               <h4>Módulo SII</h4>
               <div id="siiInfo"></div>
-              <button class="cta secondary" id="marcarSii">Marcar pagado</button>
+              <div class="admin-actions">
+                <button class="ghost-btn" id="marcarSii">Marcar pagado</button>
+              </div>
             </section>
           </div>
         </div>
       </div>
     </div>
-
-    <template id="pedidoTemplate">
-      <article class="pedido-item">
-        <div>
-          <p class="pedido-id"></p>
-          <p class="pedido-estado"></p>
-        </div>
-        <p class="pedido-total"></p>
-        <p class="pedido-texto"></p>
-        <a class="pedido-imagen" target="_blank" rel="noopener">Ver imagen</a>
-      </article>
-    </template>
 
     <script src="./main.js" type="module"></script>
   </body>

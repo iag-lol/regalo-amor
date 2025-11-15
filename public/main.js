@@ -50,6 +50,7 @@ const elements = {
   adminModalContent: document.querySelector('#adminModal .modal-content'),
   floatingCart: document.getElementById('floatingCart'),
   scrollDestacados: document.getElementById('scrollDestacados'),
+  refreshAdmin: document.getElementById('refreshAdmin'),
 };
 
 const renderProductos = (productos) => {
@@ -482,6 +483,10 @@ const attachEvents = () => {
   });
   elements.configEnviosForm.addEventListener('submit', saveConfigEnvios);
   elements.marcarSii.addEventListener('click', marcarSiiPagado);
+  elements.refreshAdmin?.addEventListener('click', () => {
+    if (!state.adminToken) return;
+    authenticateAdmin(state.adminToken).catch(() => {});
+  });
   elements.pedidoForm.telefonoEsMismo?.addEventListener('change', (event) => {
     if (event.target.checked) {
       elements.pedidoForm.telefonoLlamada.value = elements.pedidoForm.telefonoWsp.value;
