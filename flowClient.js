@@ -1,8 +1,8 @@
 import axios from 'axios';
 import crypto from 'crypto';
 
-const FLOW_API_KEY = process.env.FLOW_API_KEY;
-const FLOW_API_SECRET = process.env.FLOW_API_SECRET;
+const FLOW_API_KEY = process.env.FLOW_API_KEY || process.env.FLOW_KEY;
+const FLOW_API_SECRET = process.env.FLOW_API_SECRET || process.env.FLOW_SECRET;
 const FLOW_ENV = (process.env.FLOW_ENV || 'sandbox').toLowerCase();
 
 if (!FLOW_API_KEY || !FLOW_API_SECRET) {

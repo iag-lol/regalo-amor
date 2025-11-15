@@ -20,11 +20,25 @@ app.use(bodyParser.json({ limit: '15mb' }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const resolveEnv = (...keys) => keys.map((key) => process.env[key]).find(Boolean);
+
+const supabaseUrl = resolveEnv('SUPABASE_URL', 'NEXT_PUBLIC_SUPABASE_URL');
+const supabaseServiceKey = resolveEnv(
+  'SUPABASE_SERVICE_ROLE_KEY',
+  'SUPABASE_SERVICE_ROLE',
+  'SUPABASE_SERVICE_KEY',
+  'SUPABASE_SECRET'
+);
 
 if (!supabaseUrl || !supabaseServiceKey) {
-  console.error('Supabase no está configurado correctamente. Verifica SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY.');
+  const missing = [];
+  if (!supabaseUrl) missing.push('SUPABASE_URL');
+  if (!supabaseServiceKey) missing.push('SUPABASE_SERVICE_ROLE_KEY');
+  console.error(
+    `[config] Supabase no está configurado correctamente. Faltan variables: ${missing.join(
+      ', '
+    )}. Verifica tu configuración en Render.`
+  );
 }
 
 const supabase = (supabaseUrl && supabaseServiceKey)
