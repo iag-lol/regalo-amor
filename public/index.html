@@ -1,182 +1,183 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Carro de Prueba (Flow)</title>
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Atelier de Regalos Personalizados</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="logo">Atelier · Personalización fina</div>
+      <button class="admin-btn" id="adminBtn">Admin</button>
+    </header>
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      min-height: 100vh;
-      background: #f4f6fb;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
+    <section class="hero">
+      <div>
+        <p class="hero-kicker">Regalos únicos hechos a medida</p>
+        <h1>Personaliza emociones, crea recuerdos elegantes.</h1>
+        <p>Selecciona, personaliza y envía detalles inolvidables con diseño premium, grabados y empaques exclusivos.</p>
+        <a class="cta" href="#productos">Explorar colección</a>
+      </div>
+      <div class="hero-card">
+        <p>Servicio express en Santiago</p>
+        <h3>Agenda tu entrega desde $4.990</h3>
+        <ul>
+          <li>Curaduría de productos boutique</li>
+          <li>Diseño gráfico personalizado</li>
+          <li>Seguimiento y confirmación por WhatsApp</li>
+        </ul>
+      </div>
+    </section>
 
-    .card {
-      background: #fff;
-      border-radius: 18px;
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
-      padding: 32px;
-      width: 100%;
-      max-width: 420px;
-    }
+    <section class="carousel" id="destacados">
+      <button class="carousel-nav" id="prevHighlight" aria-label="Anterior">‹</button>
+      <div class="carousel-track" id="carouselTrack"></div>
+      <button class="carousel-nav" id="nextHighlight" aria-label="Siguiente">›</button>
+    </section>
 
-    h1 {
-      margin-top: 0;
-      color: #0f172a;
-    }
+    <main class="layout" id="productos">
+      <section class="product-list">
+        <div class="section-header">
+          <div>
+            <h2>Nuestra colección</h2>
+            <p>Selecciona tus piezas favoritas y combínalas para crear la experiencia perfecta.</p>
+          </div>
+          <div class="filters">
+            <input type="search" id="searchProducto" placeholder="Buscar producto" />
+            <select id="categoriaFiltro">
+              <option value="">Todas las categorías</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid" id="listaProductos"></div>
+      </section>
 
-    .product-name {
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
+      <aside class="sidebar">
+        <section class="cart" id="carritoPanel">
+          <div class="cart-header">
+            <h3>Tu carrito</h3>
+            <span id="cartCount">0 artículos</span>
+          </div>
+          <div class="cart-items" id="cartItems"></div>
+          <div class="cart-total">
+            <p>Subtotal</p>
+            <p id="cartTotal">$0</p>
+          </div>
+        </section>
 
-    .price {
-      color: #475569;
-      margin-bottom: 20px;
-    }
+        <section class="client-form">
+          <h3>Datos de envío</h3>
+          <form id="pedidoForm">
+            <label>Nombre completo<input type="text" name="nombre" required /></label>
+            <label>RUT<input type="text" name="rut" required /></label>
+            <label>Correo electrónico<input type="email" name="email" required /></label>
+            <label>Dirección<input type="text" name="direccion" required /></label>
+            <label>Comuna<input type="text" name="comuna" required list="comunasList" /></label>
+            <datalist id="comunasList"></datalist>
+            <label>Teléfono WhatsApp<input type="tel" name="telefonoWsp" required /></label>
+            <label>Teléfono de llamada<input type="tel" name="telefonoLlamada" required /></label>
+            <label class="checkbox">
+              <input type="checkbox" name="telefonoEsMismo" /> ¿Es el mismo número?
+            </label>
+            <label>Día de envío<select name="fechaEnvio" id="diasEnvio" required></select></label>
+            <label>Horario<select name="horarioEnvio" id="horariosEnvio" required></select></label>
+          </form>
+        </section>
 
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 600;
-      color: #0f172a;
-    }
+        <section class="personalizacion">
+          <h3>Personalización premium</h3>
+          <label>Mensaje especial<textarea id="mensajePersonalizacion" maxlength="240" placeholder="Cuéntanos el texto o dedicatoria..."></textarea></label>
+          <label>Tipo de diseño
+            <select id="tipoDiseno">
+              <option value="solo_texto">Solo texto elegante</option>
+              <option value="texto_y_imagen">Texto + imagen</option>
+              <option value="ilustracion_personalizada">Ilustración personalizada</option>
+            </select>
+          </label>
+          <label>Sube inspiración (opcional)<input type="file" id="imagenPersonalizacion" accept="image/*" /></label>
+          <div class="image-preview" id="previewImagen"></div>
+        </section>
 
-    input {
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: 10px;
-      border: 1px solid #cbd5f5;
-      font-size: 1rem;
-      margin-bottom: 18px;
-    }
+        <section class="fidelidad" id="fidelidad">
+          <h3>Programa de fidelidad</h3>
+          <p>Acumula puntos por cada compra para upgrades de empaque, tarjetas caligrafiadas y envíos express.</p>
+          <p class="puntos" id="puntosCliente">Tus puntos acumulados aparecerán aquí.</p>
+        </section>
 
-    input:focus {
-      outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-    }
+        <button class="cta" id="btnConfirmar">Confirmar pedido</button>
+        <p class="nota">Al confirmar serás redirigido a Flow para completar el pago.</p>
+      </aside>
+    </main>
 
-    .total {
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin-bottom: 24px;
-      color: #0f172a;
-    }
-
-    button {
-      width: 100%;
-      border: none;
-      border-radius: 999px;
-      padding: 14px 20px;
-      font-size: 1rem;
-      font-weight: 600;
-      background: #2563eb;
-      color: #fff;
-      cursor: pointer;
-      transition: transform 0.1s ease, background 0.2s ease;
-    }
-
-    button:hover {
-      background: #1d4ed8;
-    }
-
-    button:active {
-      transform: scale(0.98);
-    }
-
-    #status {
-      margin-top: 16px;
-      min-height: 20px;
-      color: #dc2626;
-    }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <h1>Carro de Prueba (Flow)</h1>
-    <div class="product">
-      <div class="product-name">Botella personalizada (demo)</div>
-      <div class="price">Precio unitario: $100 CLP</div>
+    <div class="modal" id="adminModal">
+      <div class="modal-content">
+        <button class="close" id="closeAdmin">×</button>
+        <div id="adminLogin">
+          <h3>Panel administrativo</h3>
+          <label>Contraseña<input type="password" id="adminPassword" /></label>
+          <button class="cta" id="adminLoginBtn">Ingresar</button>
+          <p class="error" id="adminError"></p>
+        </div>
+        <div id="adminPanel" class="admin-panel hidden">
+          <div class="admin-grid">
+            <section>
+              <h4>Resumen de hoy</h4>
+              <ul id="pedidosHoy"></ul>
+            </section>
+            <section>
+              <h4>Stock y bajo stock</h4>
+              <table>
+                <thead>
+                  <tr><th>Producto</th><th>Stock</th></tr>
+                </thead>
+                <tbody id="stockTabla"></tbody>
+              </table>
+            </section>
+            <section>
+              <h4>Métricas últimos 7 días</h4>
+              <div id="metricas"></div>
+            </section>
+            <section>
+              <h4>Configurar envíos</h4>
+              <form id="configEnviosForm">
+                <label>Días abiertos<textarea name="dias"></textarea></label>
+                <label>Horarios<textarea name="horarios"></textarea></label>
+                <label>Costo base<input type="number" name="costo" min="0" /></label>
+                <label>Comunas<textarea name="comunas"></textarea></label>
+                <button class="cta" type="submit">Guardar</button>
+                <p class="status" id="configStatus"></p>
+              </form>
+            </section>
+            <section>
+              <h4>Pedidos recientes</h4>
+              <div id="pedidosRecientes"></div>
+            </section>
+            <section>
+              <h4>Módulo SII</h4>
+              <div id="siiInfo"></div>
+              <button class="cta secondary" id="marcarSii">Marcar pagado</button>
+            </section>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <label for="quantity">Cantidad</label>
-    <input type="number" id="quantity" min="1" value="1" />
+    <template id="pedidoTemplate">
+      <article class="pedido-item">
+        <div>
+          <p class="pedido-id"></p>
+          <p class="pedido-estado"></p>
+        </div>
+        <p class="pedido-total"></p>
+        <p class="pedido-texto"></p>
+        <a class="pedido-imagen" target="_blank" rel="noopener">Ver imagen</a>
+      </article>
+    </template>
 
-    <label for="email">Correo electrónico</label>
-    <input type="email" id="email" placeholder="tu-correo@ejemplo.com" />
-
-    <div class="total">Total: <span id="total">$100 CLP</span></div>
-
-    <button id="payBtn">Pagar con Flow</button>
-    <div id="status"></div>
-  </div>
-
-  <script>
-    const UNIT_PRICE = 100;
-    const quantityInput = document.getElementById('quantity');
-    const emailInput = document.getElementById('email');
-    const totalEl = document.getElementById('total');
-    const statusEl = document.getElementById('status');
-    const payBtn = document.getElementById('payBtn');
-
-    const formatCLP = (value) => `$${value.toLocaleString('es-CL')} CLP`;
-
-    const updateTotal = () => {
-      let qty = parseInt(quantityInput.value, 10);
-      if (!Number.isInteger(qty) || qty < 1) {
-        qty = 1;
-      }
-      quantityInput.value = qty;
-      totalEl.textContent = formatCLP(qty * UNIT_PRICE);
-    };
-
-    quantityInput.addEventListener('input', updateTotal);
-    updateTotal();
-
-    payBtn.addEventListener('click', async () => {
-      const qty = parseInt(quantityInput.value, 10);
-      const email = emailInput.value.trim();
-
-      if (!email) {
-        statusEl.textContent = 'Por favor, ingresa tu correo electrónico.';
-        return;
-      }
-
-      statusEl.style.color = '#475569';
-      statusEl.textContent = 'Creando orden en Flow...';
-
-      try {
-        const response = await fetch('/api/orden', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ quantity: qty, email })
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.ok) {
-          statusEl.textContent = 'Redirigiendo a Flow...';
-          window.location.href = data.urlPago;
-        } else {
-          statusEl.style.color = '#dc2626';
-          statusEl.textContent = data?.message || 'No pudimos crear la orden.';
-        }
-      } catch (err) {
-        statusEl.style.color = '#dc2626';
-        statusEl.textContent = 'Error inesperado. Intenta nuevamente.';
-      }
-    });
-  </script>
-</body>
+    <script src="./main.js" type="module"></script>
+  </body>
 </html>
