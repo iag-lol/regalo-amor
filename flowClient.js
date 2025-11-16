@@ -1,56 +1,65 @@
-import axios from 'axios';
 import crypto from 'crypto';
 
-const FLOW_API_KEY = process.env.FLOW_API_KEY || process.env.FLOW_KEY;
-const FLOW_API_SECRET = process.env.FLOW_API_SECRET || process.env.FLOW_SECRET;
-const FLOW_ENV = (process.env.FLOW_ENV || 'sandbox').toLowerCase();
-
-if (!FLOW_API_KEY || !FLOW_API_SECRET) {
-  console.warn('[flowClient] Falta FLOW_API_KEY o FLOW_API_SECRET, las integraciones fallarán.');
-}
-
-const BASE_URL = FLOW_ENV === 'production'
-  ? 'https://www.flow.cl/api'
-  : 'https://sandbox.flow.cl/api';
-
-const buildSignature = (params) => {
-  const payload = Object.keys(params)
-    .sort()
-    .map((key) => `${key}=${params[key]}`)
-    .join('&');
-  return crypto.createHmac('sha256', FLOW_API_SECRET).update(payload).digest('hex');
-};
-
-export const createPayment = async ({
+export async function createFlowPayment({
   amount,
   commerceOrder,
   subject,
   email,
   urlConfirmation,
-  urlReturn,
-}) => {
+  urlReturn
+}) {
+  const apiKey = process.env.FLOW_API_KEY;
+  const apiSecret = process.env.FLOW_API_SECRET;
+  const ambiente = process.env.FLOW_AMBIENTE || 'sandbox';
+
+  const baseUrl = ambiente === 'production'
+    ? 'https://www.flow.cl/api'
+    : 'https://sandbox.flow.cl/api';
+
   const params = {
-    apiKey: FLOW_API_KEY,
-    commerceOrder,
+    apiKey,
+    commerceOrder: String(commerceOrder),
     subject,
     currency: 'CLP',
-    amount,
+    amount: Math.round(amount),
     email,
     urlConfirmation,
-    urlReturn,
+    urlReturn
   };
 
-  const signature = buildSignature(params);
-  const body = new URLSearchParams({ ...params, s: signature });
+  const sortedKeys = Object.keys(params).sort();
+  const toSign = sortedKeys.map(key => `${key}=${params[key]}`).join('&');
+  const signature = crypto
+    .createHmac('sha256', apiSecret)
+    .update(toSign)
+    .digest('hex');
 
-  const { data } = await axios.post(`${BASE_URL}/payment/create`, body.toString(), {
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    timeout: 15000,
-  });
+  params.s = signature;
 
-  if (!data || !data.url) {
-    throw new Error('Flow no retornó una URL de pago válida');
+  const queryString = new URLSearchParams(params).toString();
+
+  try {
+    const response = await fetch(`${baseUrl}/payment/create`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: queryString
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.url) {
+      throw new Error(data.message || 'Error al crear pago en Flow');
+    }
+
+    return {
+      url: data.url + '?token=' + data.token,
+      token: data.token,
+      flowOrder: data.flowOrder
+    };
+  } catch (error) {
+    console.error('Error en Flow:', error);
+    throw error;
   }
-
-  return data;
-};
+}

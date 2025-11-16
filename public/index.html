@@ -1,275 +1,1285 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Atelier Blanc · Regalos Personalizados</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css" />
-  </head>
-  <body>
-    <header class="main-header">
-      <div class="brand">
-        <span class="brand-mark"></span>
-        Atelier Blanc
-      </div>
-      <nav>
-        <a href="#coleccion">Colección</a>
-        <a href="#experiencia">Experiencia</a>
-        <a href="#atelierLab">Atelier Lab</a>
-        <a href="#faq">FAQ</a>
-      </nav>
-      <div class="header-actions">
-        <button class="ghost-btn" id="adminBtn">Panel</button>
-        <button class="primary-btn" id="openCheckout" disabled>Personalizar</button>
-      </div>
-    </header>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regalos Personalizados Premium</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-    <section class="hero">
-      <div class="hero-copy">
-        <p class="eyebrow">Hecho en Santiago · Envíos el mismo día</p>
-        <h1>Colecciones verticales que elevan cada celebración.</h1>
-        <p>Curamos objetos de autor, trabajamos ilustraciones exclusivas y coordinamos tu entrega con precisión de estudio creativo. Diseña tu regalo con la misma elegancia con la que Apple lanza un producto.</p>
-        <div class="hero-cta">
-          <a class="primary-btn" href="#coleccion">Explorar colección</a>
-          <button class="text-btn" id="scrollDestacados">Ver destacados</button>
-        </div>
-      </div>
-      <div class="hero-gallery">
-        <figure>
-          <img src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=600&q=60" alt="Caja personalizada" />
-          <figcaption>Sets verticales con flores preservadas.</figcaption>
-        </figure>
-        <figure>
-          <img src="https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=600&q=60" alt="Champagne personalizado" />
-          <figcaption>Grabados, foil y envoltorios a medida.</figcaption>
-        </figure>
-      </div>
-    </section>
+    :root {
+      --bg-dark: #0f0f0f;
+      --bg-card: #1a1a1a;
+      --bg-hover: #252525;
+      --text: #ffffff;
+      --text-muted: #999999;
+      --accent: #f97316;
+      --accent-hover: #ea580c;
+      --border: #333333;
+      --success: #10b981;
+      --error: #ef4444;
+    }
 
-    <section class="capsule-grid" id="destacados">
-      <article>
-        <h3>Curaduría de autor</h3>
-        <p>Trabajamos con perfumistas, chocolaterías bean-to-bar y estudios de papel artesanal.</p>
-      </article>
-      <article>
-        <h3>Diseño editorial</h3>
-        <p>Tipografías exclusivas, monogramas y control de color aprobado por directores de arte.</p>
-      </article>
-      <article>
-        <h3>Logística boutique</h3>
-        <p>Seguimiento humano y confirmaciones por WhatsApp antes de despachar.</p>
-      </article>
-    </section>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text);
+      line-height: 1.6;
+    }
 
-    <section class="product-section" id="coleccion">
-      <div class="section-head">
-        <div>
-          <p class="eyebrow">Colección permanente</p>
-          <h2>Selecciona hasta cinco piezas por experiencia</h2>
-        </div>
-        <div class="filters">
-          <input type="search" id="searchProducto" placeholder="Buscar producto" />
-          <select id="categoriaFiltro">
-            <option value="">Todas las categorías</option>
-          </select>
-        </div>
-      </div>
-      <p class="section-subtitle">Imágenes verticales pensadas para destacar packaging, textura y escala. Al agregar productos podrás abrir el estudio de personalización para completar tu entrega.</p>
-      <div class="product-grid" id="listaProductos"></div>
-      <div class="cta-row">
-        <p>¿Listo para personalizar? Usa el botón “Personalizar” del header para abrir la ventana Atelier Lab.</p>
-      </div>
-    </section>
+    .header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
 
-    <section class="experience" id="experiencia">
-      <div>
-        <p class="eyebrow">Programa de fidelidad</p>
-        <h3>Acumula puntos Atelier para upgrades de empaque, impresión en foil o envíos express.</h3>
-        <p>Guardamos tu historial por RUT y sumamos puntos cada vez que confirmas un pedido. Puedes canjearlos por papel algodón, tarjetas caligrafiadas o ilustraciones exclusivas.</p>
-        <p class="points" id="puntosCliente">Tus puntos aparecerán aquí luego de pagar.</p>
-      </div>
-      <div class="experience-card">
-        <h4>Workflow</h4>
-        <ol>
-          <li>Curar: selecciona tus piezas favoritas (máximo 5 por envío).</li>
-          <li>Personalizar: mensaje, ilustración y referencia visual.</li>
-          <li>Confirmar: Flow envía la boleta y coordinamos la entrega.</li>
-        </ol>
-        <p>Todo el proceso se acompaña por WhatsApp con avances de diseño.</p>
-      </div>
-    </section>
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
 
-    <section class="atelier-lab" id="atelierLab">
-      <header>
-        <p class="eyebrow">Atelier Lab</p>
-        <h2>Personalización inmersiva</h2>
-        <p>Una vez cierres tu carrito, se abre una ventana inspirada en los paneles de macOS para completar cada detalle.</p>
-      </header>
-      <div class="lab-grid">
-        <article>
-          <h4>Mensaje</h4>
-          <p>Limitamos a 240 caracteres para mantener la composición perfecta.</p>
-        </article>
-        <article>
-          <h4>Ilustración o foto</h4>
-          <p>Sube uno o varios referentes en vertical; se almacenan seguros en Supabase.</p>
-        </article>
-        <article>
-          <h4>Agenda</h4>
-          <p>Solo mostramos los días y horarios que cargas en Configuración de envíos.</p>
-        </article>
-      </div>
-    </section>
+    .logo-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #fb923c);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
 
-    <section class="faq" id="faq">
-      <h3>Preguntas frecuentes</h3>
-      <div class="faq-grid">
-        <article>
-          <h5>¿Cuánto tarda el diseño?</h5>
-          <p>Enviamos boceto digital en 2 horas hábiles vía WhatsApp.</p>
-        </article>
-        <article>
-          <h5>¿Puedo repetir pedidos?</h5>
-          <p>Duplicamos tu carrito desde el panel admin y reusamos ilustraciones.</p>
-        </article>
-        <article>
-          <h5>¿Cómo monitorean el stock?</h5>
-          <p>El panel muestra alertas en rojo cuando un producto baja de 5 unidades.</p>
-        </article>
-      </div>
-    </section>
+    .logo-text h1 {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
 
-    <div class="floating-cart" id="floatingCart">
-      <div>
-        <span id="cartCount">0 productos</span>
-        <small>Curaduría en progreso</small>
+    .logo-text p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn-secondary {
+      background: var(--bg-hover);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-card);
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+      padding: 3rem;
+      border-radius: 16px;
+      margin-bottom: 2rem;
+      border: 1px solid var(--border);
+    }
+
+    .hero h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--accent), #fb923c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    .carousel {
+      overflow-x: auto;
+      display: flex;
+      gap: 1.5rem;
+      padding: 1rem 0;
+      scroll-behavior: smooth;
+    }
+
+    .carousel::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .carousel::-webkit-scrollbar-track {
+      background: var(--bg-card);
+      border-radius: 4px;
+    }
+
+    .carousel::-webkit-scrollbar-thumb {
+      background: var(--accent);
+      border-radius: 4px;
+    }
+
+    .product-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      min-width: 280px;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .product-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+    }
+
+    .product-card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .product-price {
+      font-size: 1.5rem;
+      color: var(--accent);
+      font-weight: 600;
+      margin: 0.5rem 0;
+    }
+
+    .product-desc {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      margin-top: 0.5rem;
+    }
+
+    .badge-warning {
+      background: rgba(249, 115, 22, 0.2);
+      color: var(--accent);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 100px;
+      height: fit-content;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card h3 {
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+
+    .cart-item-info {
+      flex: 1;
+    }
+
+    .cart-item-name {
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+
+    .cart-item-price {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .cart-quantity {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .qty-btn {
+      width: 28px;
+      height: 28px;
+      border: 1px solid var(--border);
+      background: var(--bg-hover);
+      color: var(--text);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .qty-btn:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.75rem;
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    select.form-control {
+      cursor: pointer;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .total-section {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 2px solid var(--border);
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+
+    .total-row.final {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-top: 1rem;
+    }
+
+    .empty-cart {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-muted);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 1000;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      width: 90%;
+      max-width: 1200px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .modal-header {
+      padding: 2rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: var(--bg-card);
+      z-index: 10;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 2rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .modal-body {
+      padding: 2rem;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+
+    .tab {
+      padding: 1rem 1.5rem;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+
+    .tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--bg-dark);
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      font-weight: 600;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .status-badge {
+      padding: 0.35rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .status-pendiente {
+      background: rgba(234, 179, 8, 0.2);
+      color: #facc15;
+    }
+
+    .status-pagado {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--success);
+    }
+
+    .status-rechazado {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--error);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-muted);
+    }
+
+    .spinner {
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .alert {
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .alert-error {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid var(--error);
+      color: var(--error);
+    }
+
+    .alert-success {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid var(--success);
+      color: var(--success);
+    }
+
+    @media (max-width: 1024px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+      }
+
+      .hero h2 {
+        font-size: 2rem;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .header {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+      }
+
+      .container {
+        padding: 1rem;
+      }
+
+      .hero {
+        padding: 2rem 1.5rem;
+      }
+
+      .hero h2 {
+        font-size: 1.5rem;
+      }
+
+      .product-card {
+        min-width: 250px;
+      }
+
+      .modal-content {
+        width: 95%;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      table {
+        font-size: 0.85rem;
+      }
+
+      th, td {
+        padding: 0.75rem 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon">RP</div>
+      <div class="logo-text">
+        <h1>Regalos Personalizados</h1>
+        <p>Premium · Únicos · A tu medida</p>
       </div>
-      <strong id="cartTotal">$0</strong>
     </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" onclick="scrollToProducts()">Ver productos</button>
+      <button class="btn btn-secondary" onclick="openAdmin()">Admin</button>
+    </div>
+  </header>
 
-    <div class="overlay" id="checkoutOverlay">
-      <div class="overlay-panel">
-        <button class="close" id="closeOverlay">×</button>
-        <div class="checkout-stack">
-          <section class="pane review">
-            <header>
-              <p class="eyebrow">Selección</p>
-              <h3>Resumen del pedido</h3>
-            </header>
-            <div class="cart-items" id="cartItems"></div>
-            <div class="cart-total">
-              <span>Subtotal</span>
-              <strong id="checkoutTotal">$0</strong>
+  <div class="container">
+    <div class="main-grid">
+      <div class="main-content">
+        <div class="hero">
+          <h2>Convierte tus ideas en regalos inolvidables</h2>
+          <p>Tazas, cuadros, poleras y mucho más. Todo personalizado con tu diseño, texto o imagen favorita.</p>
+          <button class="btn btn-primary" onclick="scrollToProducts()">Explorar catálogo</button>
+        </div>
+
+        <h3 style="margin-bottom: 1rem;">Productos destacados</h3>
+        <div class="carousel" id="productCarousel">
+          <div class="loading">
+            <div class="spinner"></div>
+            <p>Cargando productos...</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar">
+        <div class="card">
+          <h3>Tu pedido</h3>
+          <div id="cartItems">
+            <div class="empty-cart">
+              <p>Tu carrito está vacío</p>
+              <p style="font-size: 0.85rem; margin-top: 0.5rem;">Agrega productos para comenzar</p>
             </div>
-            <button class="ghost-btn full" id="clearCart">Vaciar carrito</button>
-          </section>
-          <section class="pane form">
-            <header>
-              <p class="eyebrow">Personalización</p>
-              <h3>Completa los datos</h3>
-            </header>
-            <form id="pedidoForm">
-              <div class="form-grid">
-                <label>Nombre completo<input type="text" name="nombre" required /></label>
-                <label>RUT<input type="text" name="rut" required /></label>
-                <label>Correo electrónico<input type="email" name="email" required /></label>
-                <label>Dirección<input type="text" name="direccion" required /></label>
-                <label>Comuna<input type="text" name="comuna" required list="comunasList" /></label>
-                <label>Teléfono WhatsApp<input type="tel" name="telefonoWsp" required /></label>
-                <label>Teléfono de llamada<input type="tel" name="telefonoLlamada" required /></label>
-                <label class="checkbox">
-                  <input type="checkbox" name="telefonoEsMismo" /> ¿Es el mismo número?
-                </label>
-                <label>Día de envío<select name="fechaEnvio" id="diasEnvio" required></select></label>
-                <label>Horario<select name="horarioEnvio" id="horariosEnvio" required></select></label>
-              </div>
-              <datalist id="comunasList"></datalist>
-              <div class="lab-fields">
-                <label>Mensaje especial<textarea id="mensajePersonalizacion" maxlength="240" placeholder="Dedicatoria elegante"></textarea></label>
-                <label>Tipo de diseño
-                  <select id="tipoDiseno">
-                    <option value="solo_texto">Solo texto</option>
-                    <option value="texto_y_imagen">Texto + imagen</option>
-                    <option value="ilustracion_personalizada">Ilustración personalizada</option>
-                  </select>
-                </label>
-                <label>Sube inspiración (vertical)<input type="file" id="imagenPersonalizacion" accept="image/*" /></label>
-                <div class="image-preview" id="previewImagen"></div>
-              </div>
-              <button type="button" class="primary-btn full" id="btnConfirmar">Confirmar y pagar</button>
-              <p class="nota">Serás redirigido a Flow para completar el pago.</p>
-            </form>
-          </section>
+          </div>
+        </div>
+
+        <div class="card" id="personalizacionCard" style="display: none;">
+          <h3>Personalización</h3>
+
+          <div class="form-group">
+            <label>Tipo de diseño</label>
+            <select class="form-control" id="tipoDiseno">
+              <option value="solo_texto">Solo texto</option>
+              <option value="texto_imagen">Texto + imagen</option>
+              <option value="solo_imagen">Solo imagen</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Mensaje a imprimir</label>
+            <textarea class="form-control" id="mensajePersonalizacion" rows="3" placeholder="Escribe aquí tu mensaje..."></textarea>
+          </div>
+
+          <div class="form-group" id="imagenGroup">
+            <label>Sube tu imagen</label>
+            <input type="file" class="form-control" id="imagenPersonalizacion" accept="image/*">
+            <small style="color: var(--text-muted); font-size: 0.8rem; display: block; margin-top: 0.5rem;">
+              Formatos: JPG, PNG. Máx 5MB
+            </small>
+          </div>
+        </div>
+
+        <div class="card" id="clienteCard" style="display: none;">
+          <h3>Tus datos</h3>
+
+          <div class="form-group">
+            <label>Nombre completo *</label>
+            <input type="text" class="form-control" id="nombre" required>
+          </div>
+
+          <div class="form-group">
+            <label>RUT *</label>
+            <input type="text" class="form-control" id="rut" placeholder="12.345.678-9" required>
+          </div>
+
+          <div class="form-group">
+            <label>Correo electrónico *</label>
+            <input type="email" class="form-control" id="email" required>
+          </div>
+
+          <div class="form-group">
+            <label>Dirección de envío</label>
+            <input type="text" class="form-control" id="direccion">
+          </div>
+
+          <div class="form-group">
+            <label>Comuna</label>
+            <input type="text" class="form-control" id="comuna">
+          </div>
+
+          <div class="form-group">
+            <label>Teléfono WhatsApp *</label>
+            <input type="tel" class="form-control" id="telefonoWsp" placeholder="+56912345678" required>
+          </div>
+
+          <div class="checkbox-group">
+            <input type="checkbox" id="telefonoEsMismo">
+            <label for="telefonoEsMismo" style="margin: 0;">Usar el mismo número para llamadas</label>
+          </div>
+
+          <div class="form-group" id="telefonoLlamadaGroup">
+            <label>Teléfono de llamada</label>
+            <input type="tel" class="form-control" id="telefonoLlamada" placeholder="+56912345678">
+          </div>
+        </div>
+
+        <div class="card" id="envioCard" style="display: none;">
+          <h3>Envío</h3>
+
+          <div class="form-group">
+            <label>Fecha de envío *</label>
+            <input type="date" class="form-control" id="fechaEnvio" required>
+          </div>
+
+          <div class="form-group">
+            <label>Horario *</label>
+            <select class="form-control" id="horarioEnvio" required>
+              <option value="">Selecciona un horario</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card" id="resumenCard" style="display: none;">
+          <h3>Resumen</h3>
+
+          <div class="total-section">
+            <div class="total-row">
+              <span>Subtotal:</span>
+              <span id="subtotal">$0</span>
+            </div>
+            <div class="total-row">
+              <span>Envío:</span>
+              <span id="envio">$3.000</span>
+            </div>
+            <div class="total-row final">
+              <span>Total:</span>
+              <span id="total">$3.000</span>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="confirmarPedido()">
+            Confirmar pedido y pagar
+          </button>
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="modal" id="adminModal">
-      <div class="modal-content">
-        <button class="close" id="closeAdmin">×</button>
+  <!-- Modal Admin -->
+  <div class="modal" id="adminModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="adminTitle">Panel Administrativo</h2>
+        <button class="modal-close" onclick="closeAdmin()">&times;</button>
+      </div>
+      <div class="modal-body" id="adminBody">
+        <!-- Login admin -->
         <div id="adminLogin">
-          <h3>Panel administrativo</h3>
-          <p>Controla stock, pedidos diarios y métricas tributarias.</p>
-          <label>Contraseña<input type="password" id="adminPassword" /></label>
-          <button class="primary-btn full" id="adminLoginBtn">Ingresar</button>
-          <p class="error" id="adminError"></p>
-        </div>
-        <div id="adminPanel" class="admin-panel hidden">
-          <header class="admin-head">
-            <div>
-              <p class="eyebrow">Dashboard</p>
-              <h3>Centro de operaciones</h3>
+          <div style="max-width: 400px; margin: 2rem auto;">
+            <h3 style="margin-bottom: 1.5rem; text-align: center;">Acceso restringido</h3>
+            <div class="form-group">
+              <label>Contraseña de administrador</label>
+              <input type="password" class="form-control" id="adminPassword" onkeypress="if(event.key==='Enter') loginAdmin()">
             </div>
-            <button class="ghost-btn" id="refreshAdmin">Actualizar</button>
-          </header>
-          <div class="admin-grid">
-            <section>
-              <h4>Pedidos de hoy</h4>
-              <ul id="pedidosHoy"></ul>
-            </section>
-            <section>
-              <h4>Stock y alertas</h4>
-              <table>
-                <thead>
-                  <tr><th>Producto</th><th>Stock</th></tr>
-                </thead>
-                <tbody id="stockTabla"></tbody>
-              </table>
-            </section>
-            <section>
-              <h4>Métricas últimos 7 días</h4>
-              <div id="metricas"></div>
-            </section>
-            <section>
-              <h4>Configurar envíos</h4>
-              <form id="configEnviosForm">
-                <label>Días abiertos<textarea name="dias"></textarea></label>
-                <label>Horarios<textarea name="horarios"></textarea></label>
-                <label>Costo base<input type="number" name="costo" min="0" /></label>
-                <label>Comunas<textarea name="comunas"></textarea></label>
-                <button class="primary-btn" type="submit">Guardar</button>
-                <p class="status" id="configStatus"></p>
-              </form>
-            </section>
-            <section>
-              <h4>Pedidos recientes</h4>
-              <div id="pedidosRecientes"></div>
-            </section>
-            <section>
-              <h4>Módulo SII</h4>
-              <div id="siiInfo"></div>
-              <div class="admin-actions">
-                <button class="ghost-btn" id="marcarSii">Marcar pagado</button>
+            <button class="btn btn-primary" style="width: 100%;" onclick="loginAdmin()">Ingresar</button>
+            <div id="loginError"></div>
+          </div>
+        </div>
+
+        <!-- Panel admin -->
+        <div id="adminPanel" style="display: none;">
+          <div class="tabs">
+            <button class="tab active" onclick="switchTab('resumen')">Resumen</button>
+            <button class="tab" onclick="switchTab('productos')">Productos</button>
+            <button class="tab" onclick="switchTab('pedidos')">Pedidos</button>
+            <button class="tab" onclick="switchTab('clientes')">Clientes</button>
+            <button class="tab" onclick="switchTab('envios')">Envíos</button>
+            <button class="tab" onclick="switchTab('sii')">SII</button>
+          </div>
+
+          <div class="tab-content active" id="tab-resumen">
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-label">Ventas hoy</div>
+                <div class="stat-value" id="ventasHoy">$0</div>
               </div>
-            </section>
+              <div class="stat-card">
+                <div class="stat-label">Pedidos hoy</div>
+                <div class="stat-value" id="pedidosHoy">0</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-label">Ticket promedio</div>
+                <div class="stat-value" id="ticketPromedio">$0</div>
+              </div>
+            </div>
+
+            <h4 style="margin-bottom: 1rem;">Productos con stock bajo</h4>
+            <div id="stockBajo"></div>
+          </div>
+
+          <div class="tab-content" id="tab-productos">
+            <button class="btn btn-primary" onclick="nuevoProducto()" style="margin-bottom: 1rem;">Nuevo producto</button>
+            <div id="productosTable"></div>
+          </div>
+
+          <div class="tab-content" id="tab-pedidos">
+            <div id="pedidosTable"></div>
+          </div>
+
+          <div class="tab-content" id="tab-clientes">
+            <div id="clientesTable"></div>
+          </div>
+
+          <div class="tab-content" id="tab-envios">
+            <h4 style="margin-bottom: 1rem;">Configuración de envíos</h4>
+            <div class="form-group">
+              <label>Días abiertos</label>
+              <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem;">
+                <label><input type="checkbox" value="1" class="dia-envio"> Lunes</label>
+                <label><input type="checkbox" value="2" class="dia-envio"> Martes</label>
+                <label><input type="checkbox" value="3" class="dia-envio"> Miércoles</label>
+                <label><input type="checkbox" value="4" class="dia-envio"> Jueves</label>
+                <label><input type="checkbox" value="5" class="dia-envio"> Viernes</label>
+                <label><input type="checkbox" value="6" class="dia-envio"> Sábado</label>
+                <label><input type="checkbox" value="0" class="dia-envio"> Domingo</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Horarios (uno por línea)</label>
+              <textarea class="form-control" id="horariosEnvio" rows="4" placeholder="10:00-13:00&#10;14:00-18:00"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Precio base de envío</label>
+              <input type="number" class="form-control" id="precioBaseEnvio" value="3000">
+            </div>
+            <button class="btn btn-primary" onclick="guardarConfigEnvios()">Guardar configuración</button>
+          </div>
+
+          <div class="tab-content" id="tab-sii">
+            <h4 style="margin-bottom: 1rem;">Control de impuestos</h4>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-label">Ventas del mes</div>
+                <div class="stat-value" id="ventasMes">$0</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-label">IVA estimado (19%)</div>
+                <div class="stat-value" id="ivaEstimado">$0</div>
+              </div>
+            </div>
+            <div id="siiStatus" style="margin-top: 2rem;"></div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <script src="./main.js" type="module"></script>
-  </body>
+  <script>
+    let productos = [];
+    let carrito = [];
+    let configEnvios = {};
+    const precioEnvio = 3000;
+
+    // Cargar productos
+    async function cargarProductos() {
+      try {
+        const res = await fetch('/api/productos');
+        const data = await res.json();
+        if (data.ok) {
+          productos = data.productos;
+          renderProductos();
+        }
+      } catch (error) {
+        console.error('Error al cargar productos:', error);
+      }
+    }
+
+    // Renderizar productos
+    function renderProductos() {
+      const carousel = document.getElementById('productCarousel');
+      if (productos.length === 0) {
+        carousel.innerHTML = '<div class="loading"><p>No hay productos disponibles</p></div>';
+        return;
+      }
+
+      carousel.innerHTML = productos.map(p => `
+        <div class="product-card" onclick="agregarAlCarrito(${p.id})">
+          <h3>${p.nombre}</h3>
+          <p class="product-desc">${p.descripcion || 'Personalízalo a tu gusto'}</p>
+          <div class="product-price">Desde $${formatPrice(p.precio)}</div>
+          ${p.stock <= 5 ? '<span class="badge badge-warning">Bajo stock</span>' : ''}
+          <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Agregar</button>
+        </div>
+      `).join('');
+    }
+
+    // Agregar al carrito
+    function agregarAlCarrito(id) {
+      const producto = productos.find(p => p.id === id);
+      if (!producto) return;
+
+      const itemExistente = carrito.find(item => item.id === id);
+      if (itemExistente) {
+        itemExistente.cantidad++;
+      } else {
+        carrito.push({ ...producto, cantidad: 1 });
+      }
+
+      renderCarrito();
+      mostrarCards();
+    }
+
+    // Renderizar carrito
+    function renderCarrito() {
+      const cartItems = document.getElementById('cartItems');
+
+      if (carrito.length === 0) {
+        cartItems.innerHTML = '<div class="empty-cart"><p>Tu carrito está vacío</p></div>';
+        return;
+      }
+
+      cartItems.innerHTML = carrito.map(item => `
+        <div class="cart-item">
+          <div class="cart-item-info">
+            <div class="cart-item-name">${item.nombre}</div>
+            <div class="cart-item-price">$${formatPrice(item.precio)} c/u</div>
+          </div>
+          <div class="cart-quantity">
+            <button class="qty-btn" onclick="cambiarCantidad(${item.id}, -1)">-</button>
+            <span>${item.cantidad}</span>
+            <button class="qty-btn" onclick="cambiarCantidad(${item.id}, 1)">+</button>
+          </div>
+        </div>
+      `).join('');
+
+      calcularTotal();
+    }
+
+    // Cambiar cantidad
+    function cambiarCantidad(id, delta) {
+      const item = carrito.find(i => i.id === id);
+      if (!item) return;
+
+      item.cantidad += delta;
+      if (item.cantidad <= 0) {
+        carrito = carrito.filter(i => i.id !== id);
+      }
+
+      renderCarrito();
+      if (carrito.length === 0) {
+        ocultarCards();
+      }
+    }
+
+    // Calcular total
+    function calcularTotal() {
+      const subtotal = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+      document.getElementById('subtotal').textContent = '$' + formatPrice(subtotal);
+      document.getElementById('total').textContent = '$' + formatPrice(subtotal + precioEnvio);
+    }
+
+    // Mostrar cards
+    function mostrarCards() {
+      document.getElementById('personalizacionCard').style.display = 'block';
+      document.getElementById('clienteCard').style.display = 'block';
+      document.getElementById('envioCard').style.display = 'block';
+      document.getElementById('resumenCard').style.display = 'block';
+    }
+
+    // Ocultar cards
+    function ocultarCards() {
+      document.getElementById('personalizacionCard').style.display = 'none';
+      document.getElementById('clienteCard').style.display = 'none';
+      document.getElementById('envioCard').style.display = 'none';
+      document.getElementById('resumenCard').style.display = 'none';
+    }
+
+    // Confirmar pedido
+    async function confirmarPedido() {
+      if (carrito.length === 0) {
+        alert('Tu carrito está vacío');
+        return;
+      }
+
+      const nombre = document.getElementById('nombre').value;
+      const rut = document.getElementById('rut').value;
+      const email = document.getElementById('email').value;
+      const telefonoWsp = document.getElementById('telefonoWsp').value;
+      const fechaEnvio = document.getElementById('fechaEnvio').value;
+      const horarioEnvio = document.getElementById('horarioEnvio').value;
+
+      if (!nombre || !rut || !email || !telefonoWsp || !fechaEnvio || !horarioEnvio) {
+        alert('Por favor completa todos los campos obligatorios');
+        return;
+      }
+
+      const telefonoEsMismo = document.getElementById('telefonoEsMismo').checked;
+      const telefonoLlamada = telefonoEsMismo ? telefonoWsp : document.getElementById('telefonoLlamada').value;
+
+      const mensajePersonalizacion = document.getElementById('mensajePersonalizacion').value;
+      const tipoDiseno = document.getElementById('tipoDiseno').value;
+
+      let imagenBase64 = null;
+      const imagenFile = document.getElementById('imagenPersonalizacion').files[0];
+      if (imagenFile) {
+        imagenBase64 = await fileToBase64(imagenFile);
+      }
+
+      const subtotal = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+      const total = subtotal + precioEnvio;
+
+      const pedido = {
+        carrito: carrito.map(item => ({
+          id: item.id,
+          nombre: item.nombre,
+          cantidad: item.cantidad,
+          precio: item.precio
+        })),
+        total,
+        nombre,
+        rut,
+        email,
+        direccion: document.getElementById('direccion').value,
+        comuna: document.getElementById('comuna').value,
+        telefonoWsp,
+        telefonoLlamada,
+        telefonoEsMismo,
+        fechaEnvio,
+        horarioEnvio,
+        mensajePersonalizacion,
+        tipoDiseno,
+        imagenBase64
+      };
+
+      try {
+        const btn = event.target;
+        btn.disabled = true;
+        btn.textContent = 'Procesando...';
+
+        const res = await fetch('/api/pedido', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(pedido)
+        });
+
+        const data = await res.json();
+
+        if (data.ok) {
+          window.location.href = data.urlPago;
+        } else {
+          alert('Error: ' + data.message);
+          btn.disabled = false;
+          btn.textContent = 'Confirmar pedido y pagar';
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Ocurrió un error al procesar tu pedido');
+      }
+    }
+
+    // Convertir archivo a base64
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // Cargar config de envíos
+    async function cargarConfigEnvios() {
+      try {
+        const res = await fetch('/api/config-envios');
+        const data = await res.json();
+        if (data.ok) {
+          configEnvios = data.config;
+
+          const selectHorario = document.getElementById('horarioEnvio');
+          const horarios = configEnvios.horarios || ['10:00-13:00', '14:00-18:00'];
+          selectHorario.innerHTML = '<option value="">Selecciona un horario</option>' +
+            horarios.map(h => `<option value="${h}">${h}</option>`).join('');
+        }
+      } catch (error) {
+        console.error('Error al cargar config envíos:', error);
+      }
+    }
+
+    // Checkbox teléfono
+    document.getElementById('telefonoEsMismo').addEventListener('change', (e) => {
+      document.getElementById('telefonoLlamadaGroup').style.display = e.target.checked ? 'none' : 'block';
+    });
+
+    // Admin
+    function openAdmin() {
+      document.getElementById('adminModal').classList.add('active');
+    }
+
+    function closeAdmin() {
+      document.getElementById('adminModal').classList.remove('active');
+    }
+
+    async function loginAdmin() {
+      const password = document.getElementById('adminPassword').value;
+      const correctPass = 'admin123';
+
+      if (password === correctPass) {
+        document.getElementById('adminLogin').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        cargarDatosAdmin();
+      } else {
+        document.getElementById('loginError').innerHTML = '<div class="alert alert-error" style="margin-top: 1rem;">Contraseña incorrecta</div>';
+      }
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+
+      event.target.classList.add('active');
+      document.getElementById('tab-' + tabName).classList.add('active');
+    }
+
+    async function cargarDatosAdmin() {
+      await cargarResumenAdmin();
+      await cargarPedidosAdmin();
+      await cargarClientesAdmin();
+      await cargarSIIAdmin();
+    }
+
+    async function cargarResumenAdmin() {
+      try {
+        const res = await fetch('/api/admin/resumen');
+        const data = await res.json();
+        if (data.ok) {
+          document.getElementById('ventasHoy').textContent = '$' + formatPrice(data.ventasHoy);
+          document.getElementById('pedidosHoy').textContent = data.numPedidosHoy;
+          document.getElementById('ticketPromedio').textContent = '$' + formatPrice(data.ticketPromedio);
+
+          const stockBajo = data.productos.filter(p => p.stock <= 5);
+          const stockBajoDiv = document.getElementById('stockBajo');
+          if (stockBajo.length > 0) {
+            stockBajoDiv.innerHTML = '<table><thead><tr><th>Producto</th><th>Stock</th><th>Precio</th></tr></thead><tbody>' +
+              stockBajo.map(p => `<tr><td>${p.nombre}</td><td>${p.stock}</td><td>$${formatPrice(p.precio)}</td></tr>`).join('') +
+              '</tbody></table>';
+          } else {
+            stockBajoDiv.innerHTML = '<p style="color: var(--text-muted);">No hay productos con stock bajo</p>';
+          }
+
+          const productosDiv = document.getElementById('productosTable');
+          productosDiv.innerHTML = '<table><thead><tr><th>Producto</th><th>Precio</th><th>Stock</th><th>Activo</th></tr></thead><tbody>' +
+            data.productos.map(p => `<tr><td>${p.nombre}</td><td>$${formatPrice(p.precio)}</td><td>${p.stock}</td><td>${p.activo ? 'Sí' : 'No'}</td></tr>`).join('') +
+            '</tbody></table>';
+        }
+      } catch (error) {
+        console.error('Error al cargar resumen:', error);
+      }
+    }
+
+    async function cargarPedidosAdmin() {
+      try {
+        const res = await fetch('/api/admin/pedidos');
+        const data = await res.json();
+        if (data.ok) {
+          const pedidosDiv = document.getElementById('pedidosTable');
+          pedidosDiv.innerHTML = '<table><thead><tr><th>ID</th><th>Cliente</th><th>Total</th><th>Estado</th><th>Fecha envío</th><th>Personalización</th></tr></thead><tbody>' +
+            data.pedidos.map(p => `
+              <tr>
+                <td>#${p.id}</td>
+                <td>${p.clientes?.nombre || 'N/A'}<br><small>${p.clientes?.rut || ''}</small></td>
+                <td>$${formatPrice(p.total)}</td>
+                <td><span class="status-badge status-${p.estado.replace('_', '')}">${p.estado}</span></td>
+                <td>${p.fecha_envio || 'N/A'}<br><small>${p.horario_envio || ''}</small></td>
+                <td>
+                  ${p.mensaje_personalizacion ? `<div>${p.mensaje_personalizacion}</div>` : ''}
+                  ${p.imagen_url ? `<a href="${p.imagen_url}" target="_blank">Ver imagen</a>` : ''}
+                </td>
+              </tr>
+            `).join('') +
+            '</tbody></table>';
+        }
+      } catch (error) {
+        console.error('Error al cargar pedidos:', error);
+      }
+    }
+
+    async function cargarClientesAdmin() {
+      try {
+        const res = await fetch('/api/admin/clientes');
+        const data = await res.json();
+        if (data.ok) {
+          const clientesDiv = document.getElementById('clientesTable');
+          clientesDiv.innerHTML = '<table><thead><tr><th>Nombre</th><th>RUT</th><th>Email</th><th>Comuna</th><th>Puntos</th></tr></thead><tbody>' +
+            data.clientes.map(c => `<tr><td>${c.nombre}</td><td>${c.rut}</td><td>${c.email}</td><td>${c.comuna || 'N/A'}</td><td>${c.puntos || 0}</td></tr>`).join('') +
+            '</tbody></table>';
+        }
+      } catch (error) {
+        console.error('Error al cargar clientes:', error);
+      }
+    }
+
+    async function cargarSIIAdmin() {
+      try {
+        const res = await fetch('/api/admin/sii');
+        const data = await res.json();
+        if (data.ok) {
+          document.getElementById('ventasMes').textContent = '$' + formatPrice(data.ventasMes);
+          document.getElementById('ivaEstimado').textContent = '$' + formatPrice(data.ivaEstimado);
+
+          const statusDiv = document.getElementById('siiStatus');
+          if (data.pagado) {
+            statusDiv.innerHTML = `<div class="alert alert-success">Pago del mes registrado el ${new Date(data.fechaPago).toLocaleDateString()}</div>`;
+          } else {
+            statusDiv.innerHTML = `
+              <div class="alert alert-error">El pago de este mes no ha sido registrado</div>
+              <button class="btn btn-primary" onclick="marcarPagoSII(${data.ivaEstimado})">Marcar como pagado</button>
+            `;
+          }
+        }
+      } catch (error) {
+        console.error('Error al cargar SII:', error);
+      }
+    }
+
+    async function marcarPagoSII(monto) {
+      try {
+        const res = await fetch('/api/admin/sii/marcar-pago', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ monto })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          alert('Pago registrado correctamente');
+          cargarSIIAdmin();
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    function nuevoProducto() {
+      alert('Funcionalidad de crear producto (implementar formulario)');
+    }
+
+    async function guardarConfigEnvios() {
+      const diasSeleccionados = Array.from(document.querySelectorAll('.dia-envio:checked')).map(cb => parseInt(cb.value));
+      const horarios = document.getElementById('horariosEnvio').value.split('\n').filter(h => h.trim());
+      const precioBase = parseInt(document.getElementById('precioBaseEnvio').value);
+
+      try {
+        const res = await fetch('/api/admin/config-envios', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            dias_abiertos: diasSeleccionados,
+            horarios,
+            precio_base: precioBase
+          })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          alert('Configuración guardada correctamente');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    // Utilidades
+    function formatPrice(price) {
+      return new Intl.NumberFormat('es-CL').format(price);
+    }
+
+    function scrollToProducts() {
+      document.getElementById('productCarousel').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Inicialización
+    document.addEventListener('DOMContentLoaded', () => {
+      cargarProductos();
+      cargarConfigEnvios();
+    });
+  </script>
+
+</body>
 </html>

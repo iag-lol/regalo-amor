@@ -1,60 +1,174 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gracias por tu compra</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
-    <style>
-      body {
-        margin: 0;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #050505;
-        color: #fff;
-        font-family: 'Inter', system-ui, sans-serif;
-        padding: 2rem;
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gracias por tu compra</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-dark: #0f0f0f;
+      --bg-card: #1a1a1a;
+      --text: #ffffff;
+      --text-muted: #999999;
+      --accent: #f97316;
+      --accent-hover: #ea580c;
+      --success: #10b981;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text);
+      line-height: 1.6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 600px;
+      width: 100%;
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 3rem;
+      text-align: center;
+      border: 1px solid #333;
+    }
+
+    .icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 2rem;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--success), #059669);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--accent), #fb923c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      line-height: 1.8;
+    }
+
+    .highlight {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 1rem 2rem;
+      background: var(--accent);
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      margin-top: 2rem;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+    }
+
+    .info-box {
+      background: rgba(249, 115, 22, 0.1);
+      border: 1px solid rgba(249, 115, 22, 0.3);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-top: 2rem;
+      text-align: left;
+    }
+
+    .info-box h3 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      color: var(--accent);
+    }
+
+    .info-box ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .info-box li {
+      padding: 0.5rem 0;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .info-box li::before {
+      content: "✓ ";
+      color: var(--success);
+      font-weight: bold;
+      margin-right: 0.5rem;
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        padding: 2rem 1.5rem;
       }
-      .card {
-        max-width: 520px;
-        text-align: center;
-        padding: 2.5rem;
-        border-radius: 32px;
-        background: radial-gradient(circle at top, rgba(240, 138, 52, 0.25), transparent 60%), #0b0b0b;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 40px 120px rgba(0, 0, 0, 0.5);
-      }
+
       h1 {
-        font-family: 'Playfair Display', serif;
-        font-size: clamp(2rem, 4vw, 3rem);
-        margin-bottom: 1rem;
+        font-size: 1.5rem;
       }
+
       p {
-        color: rgba(255, 255, 255, 0.8);
-        line-height: 1.6;
+        font-size: 1rem;
       }
-      .cta {
-        margin-top: 2rem;
-        display: inline-flex;
-        padding: 0.85rem 1.8rem;
-        border-radius: 999px;
-        background: #f08a34;
-        color: #050505;
-        font-weight: 600;
-        text-decoration: none;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="card">
-      <p>Tu compra está confirmada.</p>
-      <h1>¡Gracias por confiar en Atelier!</h1>
-      <p>En los próximos minutos te contactaremos por WhatsApp o llamada para validar los detalles de diseño y envío. Queremos que cada regalo sea impecable.</p>
-      <a href="/" class="cta">Volver a la tienda</a>
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="icon">✓</div>
+
+    <h1>¡Gracias por tu compra!</h1>
+
+    <p>Tu pago ha sido procesado exitosamente a través de <span class="highlight">Flow</span>.</p>
+
+    <p>Revisaremos tu solicitud de personalización y nos pondremos en contacto contigo por <span class="highlight">WhatsApp o llamada telefónica</span> para confirmar los detalles de tu pedido.</p>
+
+    <div class="info-box">
+      <h3>Próximos pasos:</h3>
+      <ul>
+        <li>Recibirás un mensaje de confirmación en tu WhatsApp</li>
+        <li>Revisaremos tu diseño y personalización</li>
+        <li>Te contactaremos si necesitamos algún ajuste</li>
+        <li>Prepararemos tu pedido con cuidado</li>
+        <li>Lo entregaremos en la fecha y horario seleccionado</li>
+      </ul>
     </div>
-  </body>
+
+    <a href="/" class="btn">Volver a la tienda</a>
+
+    <p style="margin-top: 2rem; font-size: 0.85rem;">
+      Si tienes alguna pregunta, no dudes en contactarnos.
+    </p>
+  </div>
+
+</body>
 </html>
