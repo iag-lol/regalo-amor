@@ -255,6 +255,22 @@ app.post('/api/flow/confirmacion', async (req, res) => {
   }
 });
 
+// GET /api/admin/check-password
+app.post('/api/admin/check-password', async (req, res) => {
+  try {
+    const { password } = req.body;
+    const correctPassword = process.env.ADMIN_PASSWORD || 'admin123';
+
+    if (password === correctPassword) {
+      res.json({ ok: true, valid: true });
+    } else {
+      res.json({ ok: true, valid: false });
+    }
+  } catch (error) {
+    res.status(500).json({ ok: false, message: 'Error al verificar contraseña' });
+  }
+});
+
 // GET /api/admin/resumen
 app.get('/api/admin/resumen', async (req, res) => {
   try {
