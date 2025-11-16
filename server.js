@@ -430,22 +430,72 @@ app.post('/api/admin/sii/marcar-pago', async (req, res) => {
   }
 });
 
+// GET /api/admin/metricas-avanzadas
+app.get('/api/admin/metricas-avanzadas', async (req, res) => {
+  try {
+    const hoy = new Date();
+    const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1).toISOString().split('T')[0];
+    const hace30Dias = new Date(hoy.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+    // Ventas por categoría
+    const { data: productos } = await supabase.from('productos').select('id, nombre, categoria, precio');
+    const { data: pedidos } = await supabase
+      .from('pedidos')
+      .select('carrito, total, fecha, estado')
+      .eq('estado', 'pagado')
+      .gte('fecha', hace30Dias);
+
+    const ventasPorCategoria = {};
+    const productosMasVendidos = {};
+
+    pedidos?.forEach(pedido => {
+      try {
+        const carrito = typeof pedido.carrito === 'string' ? JSON.parse(pedido.carrito) : pedido.carrito;
+        carrito.forEach(item => {
+          const producto = productos?.find(p => p.id === item.id);
+          if (producto) {
+            const cat = producto.categoria || 'general';
+            ventasPorCategoria[cat] = (ventasPorCategoria[cat] || 0) + (item.precio * item.cantidad);
+            productosMasVendidos[producto.nombre] = (productosMasVendidos[producto.nombre] || 0) + item.cantidad;
+          }
+        });
+      } catch (e) {}
+    });
+
+    const topProductos = Object.entries(productosMasVendidos)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([nombre, cantidad]) => ({ nombre, cantidad }));
+
+    res.json({
+      ok: true,
+      ventasPorCategoria,
+      topProductos,
+      totalPedidos: pedidos?.length || 0,
+      ventasMes: pedidos?.reduce((sum, p) => sum + p.total, 0) || 0
+    });
+  } catch (error) {
+    console.error('Error en métricas avanzadas:', error);
+    res.status(500).json({ ok: false, message: 'Error al obtener métricas' });
+  }
+});
+
 // POST /api/admin/producto
 app.post('/api/admin/producto', async (req, res) => {
   try {
-    const { nombre, precio, stock, descripcion, categoria, imagen_url } = req.body;
+    const { nombre, precio, stock, descripcion, categoria, imagen_url, descuento } = req.body;
 
     const { data, error } = await supabase
       .from('productos')
       .insert({
         nombre,
-        precio,
-        stock,
+        precio: parseInt(precio),
+        stock: parseInt(stock),
         descripcion: descripcion || '',
         categoria: categoria || 'general',
         imagen_url: imagen_url || '',
         activo: true,
-        descuento: 0
+        descuento: parseInt(descuento || 0)
       })
       .select()
       .single();
@@ -456,6 +506,25 @@ app.post('/api/admin/producto', async (req, res) => {
   } catch (error) {
     console.error('Error al crear producto:', error);
     res.status(500).json({ ok: false, message: 'Error al crear producto' });
+  }
+});
+
+// DELETE /api/admin/producto/:id
+app.delete('/api/admin/producto/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { error } = await supabase
+      .from('productos')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+
+    res.json({ ok: true, message: 'Producto eliminado' });
+  } catch (error) {
+    console.error('Error al eliminar producto:', error);
+    res.status(500).json({ ok: false, message: 'Error al eliminar producto' });
   }
 });
 
