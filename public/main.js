@@ -500,6 +500,36 @@ const attachEvents = () => {
   elements.scrollDestacados?.addEventListener('click', () => {
     document.querySelector('#destacados')?.scrollIntoView({ behavior: 'smooth' });
   });
+
+  // Admin tabs
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      switchTab(btn.dataset.tab);
+    });
+  });
+
+  // Gestión de productos admin
+  document.getElementById('btnNuevoProducto')?.addEventListener('click', () => {
+    abrirModalProducto();
+  });
+
+  document.getElementById('closeProductoModal')?.addEventListener('click', cerrarModalProducto);
+
+  document.getElementById('cancelProducto')?.addEventListener('click', cerrarModalProducto);
+
+  document.getElementById('productoModal')?.addEventListener('click', (event) => {
+    if (event.target.id === 'productoModal') {
+      cerrarModalProducto();
+    }
+  });
+
+  document.getElementById('productoForm')?.addEventListener('submit', guardarProducto);
+
+  document.getElementById('productoImagen')?.addEventListener('change', handleProductoImagenChange);
+
+  // Filtros de productos admin
+  document.getElementById('adminSearchProducto')?.addEventListener('input', filtrarAdminProductos);
+  document.getElementById('adminCategoriaFiltro')?.addEventListener('change', filtrarAdminProductos);
 };
 
 const autoLoginAdmin = () => {
@@ -510,6 +540,251 @@ const autoLoginAdmin = () => {
     elements.adminLogin.classList.remove('hidden');
     elements.adminPanel.classList.add('hidden');
   });
+};
+
+// Admin tabs
+const switchTab = (tabName) => {
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tabName);
+  });
+  document.querySelectorAll('.tab-content').forEach(content => {
+    content.classList.toggle('active', content.id === `tab-${tabName}`);
+  });
+
+  if (tabName === 'productos') {
+    loadAdminProductos();
+  }
+};
+
+// Admin productos
+let adminProductos = [];
+let productoEnEdicion = null;
+let imagenProductoBase64 = null;
+
+const loadAdminProductos = async () => {
+  try {
+    const response = await fetch('/api/admin/productos', {
+      headers: { 'x-admin-token': state.adminToken },
+    });
+    const data = await response.json();
+    adminProductos = data || [];
+    renderAdminProductos(adminProductos);
+    updateAdminCategorias();
+  } catch (error) {
+    console.error('Error al cargar productos admin', error);
+  }
+};
+
+const renderAdminProductos = (productos) => {
+  const tbody = document.getElementById('productosTableBody');
+  if (!tbody) return;
+
+  tbody.innerHTML = productos.map(producto => `
+    <tr>
+      <td><img src="${producto.imagen_url || 'https://via.placeholder.com/60'}" alt="${producto.nombre}" /></td>
+      <td><strong>${producto.nombre}</strong></td>
+      <td>${producto.categoria || 'Sin categoría'}</td>
+      <td>${currency(producto.precio)}</td>
+      <td>${producto.stock || 0}</td>
+      <td>${producto.descuento || 0}%</td>
+      <td><span class="producto-estado ${producto.activo ? 'activo' : 'inactivo'}">${producto.activo ? 'Activo' : 'Inactivo'}</span></td>
+      <td>
+        <div class="producto-acciones">
+          <button class="btn-editar" data-id="${producto.id}">Editar</button>
+          <button class="btn-eliminar" data-id="${producto.id}">Eliminar</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+
+  tbody.querySelectorAll('.btn-editar').forEach(btn => {
+    btn.addEventListener('click', () => editarProducto(btn.dataset.id));
+  });
+
+  tbody.querySelectorAll('.btn-eliminar').forEach(btn => {
+    btn.addEventListener('click', () => eliminarProducto(btn.dataset.id));
+  });
+};
+
+const updateAdminCategorias = () => {
+  const categorias = [...new Set(adminProductos.map(p => p.categoria).filter(Boolean))];
+  const select = document.getElementById('adminCategoriaFiltro');
+  const datalist = document.getElementById('categoriasDatalist');
+
+  if (select) {
+    select.innerHTML = '<option value="">Todas las categorías</option>' +
+      categorias.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+  }
+
+  if (datalist) {
+    datalist.innerHTML = categorias.map(cat => `<option value="${cat}"></option>`).join('');
+  }
+};
+
+const filtrarAdminProductos = () => {
+  const search = document.getElementById('adminSearchProducto')?.value.toLowerCase() || '';
+  const categoria = document.getElementById('adminCategoriaFiltro')?.value || '';
+
+  const filtrados = adminProductos.filter(producto => {
+    const matchSearch = producto.nombre.toLowerCase().includes(search) ||
+                       (producto.descripcion || '').toLowerCase().includes(search);
+    const matchCategoria = categoria ? producto.categoria === categoria : true;
+    return matchSearch && matchCategoria;
+  });
+
+  renderAdminProductos(filtrados);
+};
+
+const abrirModalProducto = (producto = null) => {
+  productoEnEdicion = producto;
+  imagenProductoBase64 = null;
+
+  const modal = document.getElementById('productoModal');
+  const title = document.getElementById('productoModalTitle');
+  const form = document.getElementById('productoForm');
+
+  if (producto) {
+    title.textContent = 'Editar producto';
+    document.getElementById('productoId').value = producto.id;
+    document.getElementById('productoNombre').value = producto.nombre || '';
+    document.getElementById('productoCategoria').value = producto.categoria || '';
+    document.getElementById('productoPrecio').value = producto.precio || 0;
+    document.getElementById('productoStock').value = producto.stock || 0;
+    document.getElementById('productoDescuento').value = producto.descuento || 0;
+    document.getElementById('productoDescripcion').value = producto.descripcion || '';
+    document.getElementById('productoEsCombo').checked = producto.es_combo || false;
+
+    if (producto.imagen_url) {
+      document.getElementById('productoImagenPreview').innerHTML =
+        `<img src="${producto.imagen_url}" alt="Preview" />`;
+    }
+  } else {
+    title.textContent = 'Nuevo producto';
+    form.reset();
+    document.getElementById('productoImagenPreview').innerHTML = '';
+  }
+
+  modal.classList.add('open');
+};
+
+const cerrarModalProducto = () => {
+  document.getElementById('productoModal').classList.remove('open');
+  productoEnEdicion = null;
+  imagenProductoBase64 = null;
+  document.getElementById('productoError').textContent = '';
+};
+
+const handleProductoImagenChange = () => {
+  const file = document.getElementById('productoImagen').files[0];
+  if (!file) {
+    imagenProductoBase64 = null;
+    document.getElementById('productoImagenPreview').innerHTML = '';
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    imagenProductoBase64 = event.target.result;
+    document.getElementById('productoImagenPreview').innerHTML =
+      `<img src="${imagenProductoBase64}" alt="Preview" />`;
+  };
+  reader.readAsDataURL(file);
+};
+
+const subirImagenProducto = async (base64) => {
+  try {
+    const response = await fetch('/api/admin/upload-imagen', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-token': state.adminToken,
+      },
+      body: JSON.stringify({
+        imagen_base64: base64,
+        nombre_archivo: `producto-${Date.now()}`,
+      }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error);
+
+    return data.url;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const guardarProducto = async (event) => {
+  event.preventDefault();
+
+  const errorEl = document.getElementById('productoError');
+  errorEl.textContent = '';
+
+  try {
+    let imagenUrl = productoEnEdicion?.imagen_url || null;
+
+    if (imagenProductoBase64) {
+      imagenUrl = await subirImagenProducto(imagenProductoBase64);
+    }
+
+    const payload = {
+      nombre: document.getElementById('productoNombre').value,
+      categoria: document.getElementById('productoCategoria').value,
+      precio: parseFloat(document.getElementById('productoPrecio').value),
+      stock: parseInt(document.getElementById('productoStock').value) || 0,
+      descuento: parseFloat(document.getElementById('productoDescuento').value) || 0,
+      descripcion: document.getElementById('productoDescripcion').value,
+      es_combo: document.getElementById('productoEsCombo').checked,
+      imagen_url: imagenUrl,
+    };
+
+    const isEdit = productoEnEdicion !== null;
+    const url = isEdit ? `/api/admin/productos/${productoEnEdicion.id}` : '/api/admin/productos';
+    const method = isEdit ? 'PUT' : 'POST';
+
+    const response = await fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-token': state.adminToken,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error);
+
+    cerrarModalProducto();
+    loadAdminProductos();
+    alert(`Producto ${isEdit ? 'actualizado' : 'creado'} exitosamente`);
+  } catch (error) {
+    errorEl.textContent = error.message || 'Error al guardar el producto';
+  }
+};
+
+const editarProducto = (id) => {
+  const producto = adminProductos.find(p => String(p.id) === String(id));
+  if (producto) {
+    abrirModalProducto(producto);
+  }
+};
+
+const eliminarProducto = async (id) => {
+  if (!confirm('¿Estás seguro de eliminar este producto?')) return;
+
+  try {
+    const response = await fetch(`/api/admin/productos/${id}`, {
+      method: 'DELETE',
+      headers: { 'x-admin-token': state.adminToken },
+    });
+
+    if (!response.ok) throw new Error('Error al eliminar');
+
+    loadAdminProductos();
+    alert('Producto eliminado exitosamente');
+  } catch (error) {
+    alert('Error al eliminar el producto');
+  }
 };
 
 const init = () => {

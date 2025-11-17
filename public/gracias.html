@@ -1,60 +1,183 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gracias por tu compra</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
-    <style>
-      body {
-        margin: 0;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #050505;
-        color: #fff;
-        font-family: 'Inter', system-ui, sans-serif;
-        padding: 2rem;
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>¡Gracias por tu compra! - Regalo Amor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+  <style>
+    .thank-you-container {
+      min-height: 80vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .thank-you-card {
+      background: var(--surface);
+      border-radius: var(--radius-xl);
+      padding: 4rem 3rem;
+      max-width: 600px;
+      text-align: center;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .thank-you-card h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      margin: 0 0 1rem;
+      color: var(--accent);
+    }
+
+    .thank-you-card .icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 2rem;
+      border-radius: 50%;
+      background: var(--accent-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 3rem;
+    }
+
+    .thank-you-card p {
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 1.1rem;
+      margin: 1.5rem 0;
+    }
+
+    .thank-you-card .highlight {
+      background: var(--bg-soft);
+      padding: 1.5rem;
+      border-radius: var(--radius-md);
+      margin: 2rem 0;
+      border: 1px solid var(--border-light);
+    }
+
+    .thank-you-card .highlight strong {
+      color: var(--accent);
+      font-size: 1.2rem;
+    }
+
+    .actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2.5rem;
+      flex-wrap: wrap;
+    }
+
+    .order-details {
+      text-align: left;
+      background: var(--bg-soft);
+      padding: 1.5rem;
+      border-radius: var(--radius-md);
+      margin: 2rem 0;
+      border: 1px solid var(--border-light);
+    }
+
+    .order-details h3 {
+      margin: 0 0 1rem;
+      color: var(--accent);
+      font-size: 1.1rem;
+    }
+
+    .order-details ul {
+      margin: 0;
+      padding-left: 1.5rem;
+      color: var(--muted);
+    }
+
+    .order-details li {
+      margin: 0.5rem 0;
+    }
+
+    @media (max-width: 640px) {
+      .thank-you-card {
+        padding: 2rem 1.5rem;
       }
-      .card {
-        max-width: 520px;
-        text-align: center;
-        padding: 2.5rem;
-        border-radius: 32px;
-        background: radial-gradient(circle at top, rgba(240, 138, 52, 0.25), transparent 60%), #0b0b0b;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 40px 120px rgba(0, 0, 0, 0.5);
+
+      .thank-you-card h1 {
+        font-size: 2rem;
       }
-      h1 {
-        font-family: 'Playfair Display', serif;
-        font-size: clamp(2rem, 4vw, 3rem);
-        margin-bottom: 1rem;
+
+      .actions {
+        flex-direction: column;
       }
-      p {
-        color: rgba(255, 255, 255, 0.8);
-        line-height: 1.6;
+
+      .actions .primary-btn,
+      .actions .ghost-btn {
+        width: 100%;
       }
-      .cta {
-        margin-top: 2rem;
-        display: inline-flex;
-        padding: 0.85rem 1.8rem;
-        border-radius: 999px;
-        background: #f08a34;
-        color: #050505;
-        font-weight: 600;
-        text-decoration: none;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="card">
-      <p>Tu compra está confirmada.</p>
-      <h1>¡Gracias por confiar en Atelier!</h1>
-      <p>En los próximos minutos te contactaremos por WhatsApp o llamada para validar los detalles de diseño y envío. Queremos que cada regalo sea impecable.</p>
-      <a href="/" class="cta">Volver a la tienda</a>
+    }
+  </style>
+</head>
+<body>
+  <header class="main-header">
+    <div class="brand">
+      <span class="brand-mark"></span>
+      Regalo Amor
     </div>
-  </body>
+    <div class="header-actions">
+      <a class="ghost-btn" href="/">Volver a la tienda</a>
+    </div>
+  </header>
+
+  <div class="thank-you-container">
+    <div class="thank-you-card">
+      <div class="icon">✓</div>
+      <h1>¡Pago recibido!</h1>
+      <p>Gracias por confiar en Regalo Amor. Tu pedido ha sido confirmado y ya estamos trabajando en personalizarlo.</p>
+
+      <div class="highlight">
+        <strong>Te enviaremos un email de confirmación</strong>
+        <p style="margin-top: 0.5rem; font-size: 0.95rem;">Revisa tu bandeja de entrada y spam</p>
+      </div>
+
+      <div class="order-details">
+        <h3>¿Qué sigue ahora?</h3>
+        <ul>
+          <li><strong>1-2 horas:</strong> Recibirás confirmación por email con los detalles de tu pedido</li>
+          <li><strong>24 horas:</strong> Te enviaremos por WhatsApp una vista previa del diseño personalizado</li>
+          <li><strong>2-3 días:</strong> Tu pedido estará listo y lo enviaremos a tu dirección</li>
+          <li><strong>Día de entrega:</strong> Te avisamos 1 hora antes de que llegue</li>
+        </ul>
+      </div>
+
+      <p style="font-size: 0.95rem; color: var(--muted-light);">
+        Si tienes alguna pregunta, contáctanos por WhatsApp o email
+      </p>
+
+      <div class="actions">
+        <a class="primary-btn" href="/">Volver a la tienda</a>
+        <a class="ghost-btn" href="https://wa.me/56912345678?text=Hola,%20acabo%20de%20hacer%20un%20pedido" target="_blank">Escribir por WhatsApp</a>
+      </div>
+
+      <p style="margin-top: 2rem; font-size: 0.85rem; color: var(--muted-light);">
+        Número de orden: <span id="orderNumber">---</span>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // Extraer commerceOrder de la URL si existe
+    const urlParams = new URLSearchParams(window.location.search);
+    const commerceOrder = urlParams.get('commerceOrder');
+
+    if (commerceOrder) {
+      document.getElementById('orderNumber').textContent = commerceOrder.substring(0, 8).toUpperCase();
+    }
+
+    // Limpiar carrito del localStorage
+    localStorage.removeItem('carrito');
+  </script>
+</body>
 </html>

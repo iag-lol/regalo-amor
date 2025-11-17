@@ -478,6 +478,189 @@ app.post('/api/admin/sii/marcar-pagado', adminGuard, async (req, res) => {
   }
 });
 
+// CRUD de productos
+app.post('/api/admin/productos', adminGuard, async (req, res) => {
+  try {
+    const {
+      nombre,
+      descripcion,
+      precio,
+      imagen_url,
+      categoria,
+      stock,
+      descuento,
+      es_combo,
+      imagenes_galeria,
+    } = req.body;
+
+    if (!nombre || !precio) {
+      return res.status(400).json({ error: 'Nombre y precio son obligatorios' });
+    }
+
+    const payload = {
+      nombre,
+      descripcion: descripcion || '',
+      precio: safeNumber(precio),
+      imagen_url: imagen_url || null,
+      categoria: categoria || 'General',
+      stock: Number.parseInt(stock) || 0,
+      descuento: safeNumber(descuento) || 0,
+      es_combo: Boolean(es_combo),
+      activo: true,
+      imagenes_galeria: imagenes_galeria || [],
+    };
+
+    const { data, error } = await supabase
+      .from('productos')
+      .insert(payload)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return res.json({ ok: true, producto: data });
+  } catch (error) {
+    console.error('Error al crear producto', error);
+    return res.status(500).json({ error: 'No se pudo crear el producto' });
+  }
+});
+
+app.put('/api/admin/productos/:id', adminGuard, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      nombre,
+      descripcion,
+      precio,
+      imagen_url,
+      categoria,
+      stock,
+      descuento,
+      es_combo,
+      activo,
+      imagenes_galeria,
+    } = req.body;
+
+    const payload = {};
+    if (nombre !== undefined) payload.nombre = nombre;
+    if (descripcion !== undefined) payload.descripcion = descripcion;
+    if (precio !== undefined) payload.precio = safeNumber(precio);
+    if (imagen_url !== undefined) payload.imagen_url = imagen_url;
+    if (categoria !== undefined) payload.categoria = categoria;
+    if (stock !== undefined) payload.stock = Number.parseInt(stock);
+    if (descuento !== undefined) payload.descuento = safeNumber(descuento);
+    if (es_combo !== undefined) payload.es_combo = Boolean(es_combo);
+    if (activo !== undefined) payload.activo = Boolean(activo);
+    if (imagenes_galeria !== undefined) payload.imagenes_galeria = imagenes_galeria;
+
+    const { data, error } = await supabase
+      .from('productos')
+      .update(payload)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return res.json({ ok: true, producto: data });
+  } catch (error) {
+    console.error('Error al actualizar producto', error);
+    return res.status(500).json({ error: 'No se pudo actualizar el producto' });
+  }
+});
+
+app.delete('/api/admin/productos/:id', adminGuard, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { error } = await supabase
+      .from('productos')
+      .update({ activo: false })
+      .eq('id', id);
+
+    if (error) throw error;
+
+    return res.json({ ok: true });
+  } catch (error) {
+    console.error('Error al eliminar producto', error);
+    return res.status(500).json({ error: 'No se pudo eliminar el producto' });
+  }
+});
+
+// Subir imagen a Supabase Storage
+app.post('/api/admin/upload-imagen', adminGuard, async (req, res) => {
+  try {
+    const { imagen_base64, nombre_archivo } = req.body;
+
+    if (!imagen_base64) {
+      return res.status(400).json({ error: 'Imagen es requerida' });
+    }
+
+    const bucket = process.env.SUPABASE_BUCKET_IMAGENES || 'imagenes';
+    const matches = imagen_base64.match(/^data:(.*);base64,(.*)$/);
+    if (!matches) {
+      throw new Error('Formato de imagen inválido');
+    }
+
+    const contentType = matches[1];
+    const data = matches[2];
+    const buffer = Buffer.from(data, 'base64');
+    const extension = contentType.split('/')[1] || 'jpg';
+    const fileName = `productos/${nombre_archivo || Date.now()}.${extension}`;
+
+    const { error } = await supabase.storage
+      .from(bucket)
+      .upload(fileName, buffer, {
+        contentType,
+        cacheControl: '3600',
+        upsert: true,
+      });
+
+    if (error) throw error;
+
+    const { data: publicData } = supabase.storage.from(bucket).getPublicUrl(fileName);
+
+    return res.json({ ok: true, url: publicData?.publicUrl || null });
+  } catch (error) {
+    console.error('Error al subir imagen', error);
+    return res.status(500).json({ error: 'No se pudo subir la imagen' });
+  }
+});
+
+// Obtener categorías disponibles
+app.get('/api/admin/categorias', adminGuard, async (req, res) => {
+  try {
+    const { data } = await supabase
+      .from('productos')
+      .select('categoria')
+      .eq('activo', true);
+
+    const categorias = [...new Set((data || []).map(p => p.categoria).filter(Boolean))];
+
+    return res.json(categorias);
+  } catch (error) {
+    console.error('Error al obtener categorías', error);
+    return res.status(500).json({ error: 'No se pudieron obtener las categorías' });
+  }
+});
+
+// Obtener todos los productos para admin (incluso inactivos)
+app.get('/api/admin/productos', adminGuard, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('productos')
+      .select('*')
+      .order('nombre', { ascending: true });
+
+    if (error) throw error;
+
+    return res.json(data || []);
+  } catch (error) {
+    console.error('Error al obtener productos admin', error);
+    return res.status(500).json({ error: 'No se pudieron obtener los productos' });
+  }
+});
+
 app.use((req, res, next) => {
   if (req.path.startsWith('/api')) {
     return res.status(404).json({ error: 'Ruta no encontrada' });
