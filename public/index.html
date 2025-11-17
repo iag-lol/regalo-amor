@@ -22,8 +22,8 @@
         <a href="#faq">Preguntas</a>
       </nav>
       <div class="header-actions">
-        <button class="ghost-btn" id="adminBtn">Panel</button>
-        <button class="primary-btn" id="openCheckout" disabled>Personalizar</button>
+        <button class="btn btn-primary" onclick="scrollToProducts()">Explorar Colección</button>
+        <button class="btn btn-outline" onclick="openAdmin()">Panel Admin</button>
       </div>
     </header>
 
@@ -150,61 +150,22 @@
       </div>
       <strong id="cartTotal">$0</strong>
     </div>
+  </header>
 
-    <div class="overlay" id="checkoutOverlay">
-      <div class="overlay-panel">
-        <button class="close" id="closeOverlay">×</button>
-        <div class="checkout-stack">
-          <section class="pane review">
-            <header>
-              <p class="eyebrow">Selección</p>
-              <h3>Resumen del pedido</h3>
-            </header>
-            <div class="cart-items" id="cartItems"></div>
-            <div class="cart-total">
-              <span>Subtotal</span>
-              <strong id="checkoutTotal">$0</strong>
-            </div>
-            <button class="ghost-btn full" id="clearCart">Vaciar carrito</button>
-          </section>
-          <section class="pane form">
-            <header>
-              <p class="eyebrow">Personalización</p>
-              <h3>Completa los datos</h3>
-            </header>
-            <form id="pedidoForm">
-              <div class="form-grid">
-                <label>Nombre completo<input type="text" name="nombre" required /></label>
-                <label>RUT<input type="text" name="rut" required /></label>
-                <label>Correo electrónico<input type="email" name="email" required /></label>
-                <label>Dirección<input type="text" name="direccion" required /></label>
-                <label>Comuna<input type="text" name="comuna" required list="comunasList" /></label>
-                <label>Teléfono WhatsApp<input type="tel" name="telefonoWsp" required /></label>
-                <label>Teléfono de llamada<input type="tel" name="telefonoLlamada" required /></label>
-                <label class="checkbox">
-                  <input type="checkbox" name="telefonoEsMismo" /> ¿Es el mismo número?
-                </label>
-                <label>Día de envío<select name="fechaEnvio" id="diasEnvio" required></select></label>
-                <label>Horario<select name="horarioEnvio" id="horariosEnvio" required></select></label>
-              </div>
-              <datalist id="comunasList"></datalist>
-              <div class="lab-fields">
-                <label>Mensaje especial<textarea id="mensajePersonalizacion" maxlength="240" placeholder="Dedicatoria elegante"></textarea></label>
-                <label>Tipo de diseño
-                  <select id="tipoDiseno">
-                    <option value="solo_texto">Solo texto</option>
-                    <option value="texto_y_imagen">Texto + imagen</option>
-                    <option value="ilustracion_personalizada">Ilustración personalizada</option>
-                  </select>
-                </label>
-                <label>Sube inspiración (vertical)<input type="file" id="imagenPersonalizacion" accept="image/*" /></label>
-                <div class="image-preview" id="previewImagen"></div>
-              </div>
-              <button type="button" class="primary-btn full" id="btnConfirmar">Confirmar y pagar</button>
-              <p class="nota">Serás redirigido a Flow para completar el pago.</p>
-            </form>
-          </section>
-        </div>
+  <!-- Botón WhatsApp Flotante -->
+  <a href="https://wa.me/56912345678?text=Hola!%20Quisiera%20más%20información%20sobre%20sus%20productos"
+     class="whatsapp-float"
+     target="_blank"
+     title="Contáctanos por WhatsApp">
+    &#10148;
+  </a>
+
+  <div class="container">
+    <div class="hero">
+      <div class="hero-content">
+        <h2>Creaciones que cuentan historias</h2>
+        <p>Cada detalle está pensado para ti. Tazas, cuadros, textiles y más, personalizados con elegancia artesanal y acabados de la más alta calidad.</p>
+        <button class="btn btn-primary" onclick="scrollToProducts()">Descubrir más</button>
       </div>
     </div>
 
@@ -318,7 +279,6 @@
           </div>
         </div>
       </div>
-    </div>
 
     <div class="modal" id="productoModal">
       <div class="modal-content">
