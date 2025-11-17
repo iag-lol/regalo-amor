@@ -24,6 +24,18 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
+// Middleware de autenticación admin
+const adminGuard = (req, res, next) => {
+  const token = req.headers['x-admin-token'];
+  const adminPassword = process.env.ADMIN_PASSWORD || 'RegaloAmor2024';
+
+  if (!token || token !== adminPassword) {
+    return res.status(401).json({ error: 'No autorizado' });
+  }
+
+  next();
+};
+
 // GET /api/productos
 app.get('/api/productos', async (req, res) => {
   try {
