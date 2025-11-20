@@ -284,7 +284,7 @@ app.post('/api/admin/check-password', async (req, res) => {
 });
 
 // GET /api/admin/resumen
-app.get('/api/admin/resumen', async (req, res) => {
+app.get('/api/admin/resumen', adminGuard, async (req, res) => {
   try {
     const hoy = new Date().toISOString().split('T')[0];
 
@@ -336,7 +336,7 @@ app.get('/api/admin/resumen', async (req, res) => {
 });
 
 // GET /api/admin/pedidos
-app.get('/api/admin/pedidos', async (req, res) => {
+app.get('/api/admin/pedidos', adminGuard, async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('pedidos')
@@ -357,7 +357,7 @@ app.get('/api/admin/pedidos', async (req, res) => {
 });
 
 // GET /api/admin/clientes
-app.get('/api/admin/clientes', async (req, res) => {
+app.get('/api/admin/clientes', adminGuard, async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('clientes')
@@ -374,7 +374,7 @@ app.get('/api/admin/clientes', async (req, res) => {
 });
 
 // GET /api/admin/sii
-app.get('/api/admin/sii', async (req, res) => {
+app.get('/api/admin/sii', adminGuard, async (req, res) => {
   try {
     const now = new Date();
     const mes = now.getMonth() + 1;
@@ -415,7 +415,7 @@ app.get('/api/admin/sii', async (req, res) => {
 });
 
 // POST /api/admin/sii/marcar-pago
-app.post('/api/admin/sii/marcar-pago', async (req, res) => {
+app.post('/api/admin/sii/marcar-pago', adminGuard, async (req, res) => {
   try {
     const now = new Date();
     const mes = now.getMonth() + 1;
@@ -443,7 +443,7 @@ app.post('/api/admin/sii/marcar-pago', async (req, res) => {
 });
 
 // GET /api/admin/metricas-avanzadas
-app.get('/api/admin/metricas-avanzadas', async (req, res) => {
+app.get('/api/admin/metricas-avanzadas', adminGuard, async (req, res) => {
   try {
     const hoy = new Date();
     const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1).toISOString().split('T')[0];
@@ -493,7 +493,7 @@ app.get('/api/admin/metricas-avanzadas', async (req, res) => {
 });
 
 // POST /api/admin/producto
-app.post('/api/admin/producto', async (req, res) => {
+app.post('/api/admin/producto', adminGuard, async (req, res) => {
   try {
     const { nombre, precio, stock, descripcion, categoria, imagen_url, descuento } = req.body;
 
