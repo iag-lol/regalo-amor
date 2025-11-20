@@ -166,11 +166,24 @@ const loadProductos = async () => {
   try {
     const response = await fetch('/api/productos');
     const data = await response.json();
-    state.productos = data;
-    renderProductos(data);
-    updateCategorias(data);
+
+    if (!response.ok || !data.ok) {
+      console.error('Error del servidor:', data.message || 'Error desconocido');
+      state.productos = [];
+      renderProductos([]);
+      updateCategorias([]);
+      return;
+    }
+
+    const productos = data.productos || [];
+    state.productos = productos;
+    renderProductos(productos);
+    updateCategorias(productos);
   } catch (error) {
     console.error('No se pudieron cargar productos', error);
+    state.productos = [];
+    renderProductos([]);
+    updateCategorias([]);
   }
 };
 
@@ -178,17 +191,40 @@ const loadConfigEnvios = async () => {
   try {
     const response = await fetch('/api/config-envios');
     const data = await response.json();
-    state.configEnvios = data;
-    elements.diasEnvio.innerHTML = data.dias_abiertos
-      .map((dia) => `<option value="${dia}">${dia}</option>`)
-      .join('');
-    elements.horariosEnvio.innerHTML = data.horarios
-      .map((hora) => `<option value="${hora}">${hora}</option>`)
-      .join('');
-    elements.comunasList.innerHTML = (data.comunas_disponibles || [])
-      .map((comuna) => `<option value="${comuna}"></option>`)
-      .join('');
-    populateConfigForm(data);
+
+    if (!response.ok || !data.ok) {
+      console.error('Error del servidor:', data.message || 'Error desconocido');
+      // Configuración por defecto
+      state.configEnvios = {
+        dias_abiertos: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'],
+        horarios: ['10:00-13:00', '15:00-19:00'],
+        comunas_disponibles: ['Santiago']
+      };
+      return;
+    }
+
+    const config = data.config || data;
+    state.configEnvios = config;
+
+    if (elements.diasEnvio && config.dias_abiertos) {
+      elements.diasEnvio.innerHTML = config.dias_abiertos
+        .map((dia) => `<option value="${dia}">${dia}</option>`)
+        .join('');
+    }
+
+    if (elements.horariosEnvio && config.horarios) {
+      elements.horariosEnvio.innerHTML = config.horarios
+        .map((hora) => `<option value="${hora}">${hora}</option>`)
+        .join('');
+    }
+
+    if (elements.comunasList && config.comunas_disponibles) {
+      elements.comunasList.innerHTML = config.comunas_disponibles
+        .map((comuna) => `<option value="${comuna}"></option>`)
+        .join('');
+    }
+
+    populateConfigForm(config);
   } catch (error) {
     console.error('No se pudo obtener config de envíos', error);
   }

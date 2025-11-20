@@ -90,6 +90,18 @@ app.get('/api/productos', async (req, res) => {
 // GET /api/config-envios
 app.get('/api/config-envios', async (req, res) => {
   try {
+    if (!supabase) {
+      return res.json({
+        ok: true,
+        config: {
+          dias_abiertos: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'],
+          horarios: ['10:00-13:00', '15:00-19:00'],
+          comunas_disponibles: ['Santiago'],
+          costo_base: 3990
+        }
+      });
+    }
+
     const { data, error } = await supabase
       .from('config_envios')
       .select('*')
@@ -103,9 +115,10 @@ app.get('/api/config-envios', async (req, res) => {
     res.json({
       ok: true,
       config: {
-        dias_abiertos: [1, 2, 3, 4, 5],
-        horarios: ['10:00-13:00', '14:00-18:00'],
-        precio_base: 3000
+        dias_abiertos: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'],
+        horarios: ['10:00-13:00', '15:00-19:00'],
+        comunas_disponibles: ['Santiago'],
+        costo_base: 3990
       }
     });
   }
