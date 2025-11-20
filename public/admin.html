@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Administrativo - Regalo Amor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="admin-styles.css">
+</head>
+<body>
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- Login -->
+  <div id="adminLogin" class="login-screen">
+    <div class="login-card">
+      <h1>🎁 Regalo Amor</h1>
+      <h2>Panel Administrativo</h2>
+      <input type="password" id="adminPassword" placeholder="Contraseña" />
+      <button id="adminLoginBtn" class="btn-primary">Ingresar</button>
+      <p class="error" id="adminError"></p>
+    </div>
+  </div>
+
+  <!-- Panel Admin -->
+  <div id="adminPanel" class="hidden">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2>🎁 Regalo Amor</h2>
+        <p>Administración</p>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" data-section="dashboard" class="nav-item active">
+          <span class="icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" data-section="pedidos" class="nav-item">
+          <span class="icon">📦</span>
+          <span>Pedidos</span>
+        </a>
+        <a href="#" data-section="productos" class="nav-item">
+          <span class="icon">🏷️</span>
+          <span>Productos</span>
+        </a>
+        <a href="#" data-section="sii" class="nav-item">
+          <span class="icon">💰</span>
+          <span>SII / Impuestos</span>
+        </a>
+        <a href="#" data-section="config" class="nav-item">
+          <span class="icon">⚙️</span>
+          <span>Configuración</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <button id="logoutBtn" class="btn-ghost">Cerrar Sesión</button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Dashboard Section -->
+      <section id="section-dashboard" class="content-section active">
+        <div class="section-header">
+          <h1>Dashboard</h1>
+          <button id="refreshDashboard" class="btn-secondary">Actualizar</button>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background: linear-gradient(135deg, #10b981, #059669);">💰</div>
+            <div class="kpi-content">
+              <p class="kpi-label">Ventas del Mes</p>
+              <h2 class="kpi-value" id="kpiVentasMes">$0</h2>
+              <p class="kpi-sublabel"><span id="kpiPedidosPagados">0</span> pedidos pagados</p>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">📋</div>
+            <div class="kpi-content">
+              <p class="kpi-label">Pedidos Pendientes</p>
+              <h2 class="kpi-value" id="kpiPendientes">0</h2>
+              <p class="kpi-sublabel">Esperando pago</p>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">🚚</div>
+            <div class="kpi-content">
+              <p class="kpi-label">En Proceso</p>
+              <h2 class="kpi-value" id="kpiEnProceso">0</h2>
+              <p class="kpi-sublabel">Producción y envío</p>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">📈</div>
+            <div class="kpi-content">
+              <p class="kpi-label">IVA a Pagar (19%)</p>
+              <h2 class="kpi-value" id="kpiIVA">$0</h2>
+              <p class="kpi-sublabel">Del mes actual</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+          <div class="chart-card">
+            <h3>Ventas Últimos 30 Días</h3>
+            <canvas id="chartVentas"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>Top 5 Productos Más Vendidos</h3>
+            <div id="topProductos" class="top-productos"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pedidos Section -->
+      <section id="section-pedidos" class="content-section">
+        <div class="section-header">
+          <h1>Gestión de Pedidos</h1>
+          <div class="section-actions">
+            <select id="filtroEstadoPedido" class="input">
+              <option value="">Todos los estados</option>
+              <option value="pendiente_pago">Pendiente Pago</option>
+              <option value="pagado">Pagado</option>
+              <option value="en_proceso">En Proceso</option>
+              <option value="terminado">Terminado</option>
+              <option value="enviado">Enviado</option>
+              <option value="entregado">Entregado</option>
+              <option value="cancelado">Cancelado</option>
+            </select>
+            <button id="refreshPedidos" class="btn-secondary">Actualizar</button>
+          </div>
+        </div>
+
+        <div id="pedidosTable" class="data-table-container">
+          <!-- Se llena dinámicamente -->
+        </div>
+      </section>
+
+      <!-- Productos Section -->
+      <section id="section-productos" class="content-section">
+        <div class="section-header">
+          <h1>Gestión de Productos</h1>
+          <button id="btnNuevoProducto" class="btn-primary">+ Nuevo Producto</button>
+        </div>
+
+        <div class="filters-bar">
+          <input type="text" id="searchProducto" class="input" placeholder="Buscar producto...">
+          <select id="filtroCategoria" class="input">
+            <option value="">Todas las categorías</option>
+          </select>
+        </div>
+
+        <div id="productosTable" class="data-table-container">
+          <!-- Se llena dinámicamente -->
+        </div>
+      </section>
+
+      <!-- SII Section -->
+      <section id="section-sii" class="content-section">
+        <div class="section-header">
+          <h1>SII / Gestión de Impuestos</h1>
+          <p class="section-subtitle">IVA 19% sobre ventas brutas</p>
+        </div>
+
+        <div class="sii-grid">
+          <div class="sii-card">
+            <h3>Resumen del Mes Actual</h3>
+            <div class="sii-breakdown">
+              <div class="sii-row">
+                <span>Ventas Brutas:</span>
+                <strong id="siiVentasBrutas">$0</strong>
+              </div>
+              <div class="sii-row">
+                <span>Neto (sin IVA):</span>
+                <strong id="siiNeto">$0</strong>
+              </div>
+              <div class="sii-row highlight">
+                <span>IVA 19% a Pagar:</span>
+                <strong id="siiIVAPagar">$0</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="sii-card">
+            <h3>Historial de Pagos SII</h3>
+            <div id="siiHistorial">
+              <p class="text-muted">No hay registros de pagos aún</p>
+            </div>
+            <button id="btnMarcarPagoSII" class="btn-primary mt-3">Registrar Pago</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Config Section -->
+      <section id="section-config" class="content-section">
+        <div class="section-header">
+          <h1>Configuración</h1>
+        </div>
+
+        <div class="config-card">
+          <h3>Configuración de Envíos</h3>
+          <form id="configEnviosForm">
+            <div class="form-group">
+              <label>Días de Atención</label>
+              <input type="text" name="dias" class="input" placeholder="Lunes, Martes, Miércoles...">
+              <small>Separados por coma</small>
+            </div>
+            <div class="form-group">
+              <label>Horarios</label>
+              <input type="text" name="horarios" class="input" placeholder="10:00-13:00, 15:00-19:00">
+              <small>Separados por coma</small>
+            </div>
+            <div class="form-group">
+              <label>Costo Base de Envío</label>
+              <input type="number" name="costo" class="input" placeholder="3990">
+            </div>
+            <div class="form-group">
+              <label>Comunas Disponibles</label>
+              <textarea name="comunas" class="input" rows="4" placeholder="Santiago, Providencia, Las Condes..."></textarea>
+              <small>Separadas por coma</small>
+            </div>
+            <button type="submit" class="btn-primary">Guardar Cambios</button>
+            <p id="configStatus" class="status-message"></p>
+          </form>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal Detalle Pedido -->
+  <div id="pedidoModal" class="modal">
+    <div class="modal-content large">
+      <div class="modal-header">
+        <h2>Detalle del Pedido</h2>
+        <button class="modal-close" id="closePedidoModal">×</button>
+      </div>
+      <div class="modal-body" id="pedidoModalBody">
+        <!-- Se llena dinámicamente -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Producto -->
+  <div id="productoModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="productoModalTitle">Nuevo Producto</h2>
+        <button class="modal-close" id="closeProductoModal">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="productoForm">
+          <input type="hidden" id="productoId">
+          <div class="form-group">
+            <label>Nombre *</label>
+            <input type="text" id="productoNombre" class="input" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Categoría *</label>
+              <input type="text" id="productoCategoria" class="input" list="categoriasDatalist" required>
+              <datalist id="categoriasDatalist"></datalist>
+            </div>
+            <div class="form-group">
+              <label>Precio *</label>
+              <input type="number" id="productoPrecio" class="input" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Stock</label>
+              <input type="number" id="productoStock" class="input" value="0">
+            </div>
+            <div class="form-group">
+              <label>Descuento (%)</label>
+              <input type="number" id="productoDescuento" class="input" value="0" min="0" max="100">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Descripción</label>
+            <textarea id="productoDescripcion" class="input" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Imagen</label>
+            <input type="file" id="productoImagen" class="input" accept="image/*">
+            <div id="productoImagenPreview" class="image-preview"></div>
+          </div>
+          <div class="form-group">
+            <label class="checkbox">
+              <input type="checkbox" id="productoEsCombo">
+              <span>Es un combo</span>
+            </label>
+          </div>
+          <div class="form-actions">
+            <button type="button" id="cancelProducto" class="btn-secondary">Cancelar</button>
+            <button type="submit" class="btn-primary">Guardar</button>
+          </div>
+          <p class="error" id="productoError"></p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>

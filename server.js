@@ -857,6 +857,169 @@ app.get('/api/admin/productos', adminGuard, async (req, res) => {
   }
 });
 
+// POST /api/admin/config-envios - Actualizar configuración de envíos
+app.post('/api/admin/config-envios', adminGuard, async (req, res) => {
+  try {
+    const { dias_abiertos, horarios, costo_base, comunas_disponibles, mensaje_envio } = req.body;
+
+    const { data, error } = await supabase
+      .from('config_envios')
+      .upsert({
+        id: 1,
+        dias_abiertos: dias_abiertos || [],
+        horarios: horarios || [],
+        costo_base: safeNumber(costo_base, 0),
+        comunas_disponibles: comunas_disponibles || [],
+        mensaje_envio: mensaje_envio || ''
+      }, {
+        onConflict: 'id'
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.json({ ok: true, config: data });
+  } catch (error) {
+    console.error('Error al actualizar config envíos:', error);
+    res.status(500).json({ ok: false, error: 'Error al actualizar configuración' });
+  }
+});
+
+// PUT /api/admin/pedidos/:id/estado - Actualizar estado de pedido
+app.put('/api/admin/pedidos/:id/estado', adminGuard, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { estado, notas } = req.body;
+
+    const estadosValidos = ['pendiente_pago', 'pagado', 'en_proceso', 'terminado', 'enviado', 'entregado', 'cancelado'];
+    if (!estadosValidos.includes(estado)) {
+      return res.status(400).json({ ok: false, error: 'Estado inválido' });
+    }
+
+    const updateData = { estado, fecha_actualizacion: new Date().toISOString() };
+    if (notas !== undefined) updateData.notas = notas;
+
+    const { data, error } = await supabase
+      .from('pedidos')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.json({ ok: true, pedido: data });
+  } catch (error) {
+    console.error('Error al actualizar estado de pedido:', error);
+    res.status(500).json({ ok: false, error: 'Error al actualizar estado' });
+  }
+});
+
+// GET /api/admin/estadisticas - Estadísticas avanzadas
+app.get('/api/admin/estadisticas', adminGuard, async (req, res) => {
+  try {
+    const hoy = new Date();
+    const primerDiaMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1).toISOString().split('T')[0];
+    const ultimoDiaMes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0).toISOString().split('T')[0];
+
+    // Pedidos del mes
+    const { data: pedidosMes } = await supabase
+      .from('pedidos')
+      .select('total, estado, fecha, carrito_json')
+      .gte('fecha', primerDiaMes)
+      .lte('fecha', ultimoDiaMes);
+
+    // Todos los pedidos pagados para histórico
+    const { data: todosPedidos } = await supabase
+      .from('pedidos')
+      .select('total, estado, fecha, carrito_json')
+      .eq('estado', 'pagado')
+      .order('fecha', { ascending: false })
+      .limit(1000);
+
+    const ventasMes = (pedidosMes || [])
+      .filter(p => p.estado === 'pagado')
+      .reduce((sum, p) => sum + (p.total || 0), 0);
+
+    const pedidosPagadosMes = (pedidosMes || []).filter(p => p.estado === 'pagado').length;
+    const pedidosPendientes = (pedidosMes || []).filter(p => p.estado === 'pendiente_pago').length;
+    const pedidosEnProceso = (pedidosMes || []).filter(p => ['en_proceso', 'terminado', 'enviado'].includes(p.estado)).length;
+
+    // IVA 19%
+    const ivaMes = Math.round(ventasMes * 0.19);
+    const netoMes = ventasMes - ivaMes;
+
+    // Ventas por día (últimos 30 días)
+    const hace30Dias = new Date(hoy.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const ventasPorDia = {};
+
+    for (let i = 0; i < 30; i++) {
+      const fecha = new Date(hoy.getTime() - i * 24 * 60 * 60 * 1000);
+      const fechaStr = fecha.toISOString().split('T')[0];
+      ventasPorDia[fechaStr] = 0;
+    }
+
+    (todosPedidos || [])
+      .filter(p => p.fecha >= hace30Dias)
+      .forEach(p => {
+        const fechaStr = p.fecha.split('T')[0];
+        if (ventasPorDia[fechaStr] !== undefined) {
+          ventasPorDia[fechaStr] += p.total || 0;
+        }
+      });
+
+    const chartLabels = Object.keys(ventasPorDia).sort().map(f => {
+      const d = new Date(f);
+      return `${d.getDate()}/${d.getMonth() + 1}`;
+    });
+    const chartData = Object.keys(ventasPorDia).sort().map(f => ventasPorDia[f]);
+
+    // Productos más vendidos
+    const { data: productos } = await supabase.from('productos').select('id, nombre, categoria, precio');
+    const productoVentas = {};
+
+    (todosPedidos || []).forEach(pedido => {
+      try {
+        const carrito = pedido.carrito_json || [];
+        carrito.forEach(item => {
+          const producto = productos?.find(p => p.id === item.productoId || p.id === item.id);
+          if (producto) {
+            if (!productoVentas[producto.nombre]) {
+              productoVentas[producto.nombre] = { cantidad: 0, ingresos: 0 };
+            }
+            const cantidad = item.cantidad || 1;
+            const precio = item.precioUnitario || item.precio || producto.precio || 0;
+            productoVentas[producto.nombre].cantidad += cantidad;
+            productoVentas[producto.nombre].ingresos += cantidad * precio;
+          }
+        });
+      } catch (e) {}
+    });
+
+    const topProductos = Object.entries(productoVentas)
+      .map(([nombre, data]) => ({ nombre, ...data }))
+      .sort((a, b) => b.ingresos - a.ingresos)
+      .slice(0, 5);
+
+    res.json({
+      ok: true,
+      ventasMes,
+      ivaMes,
+      netoMes,
+      pedidosPagadosMes,
+      pedidosPendientes,
+      pedidosEnProceso,
+      chartLabels,
+      chartData,
+      topProductos
+    });
+  } catch (error) {
+    console.error('Error al obtener estadísticas:', error);
+    res.status(500).json({ ok: false, error: 'Error al obtener estadísticas' });
+  }
+});
+
 app.use((req, res, next) => {
   if (req.path.startsWith('/api')) {
     return res.status(404).json({ error: 'Ruta no encontrada' });
