@@ -178,7 +178,8 @@ app.post('/api/pedido', async (req, res) => {
         comuna,
         telefono_wsp: telefonoWsp,
         telefono_llamada: telefonoEsMismo ? telefonoWsp : telefonoLlamada,
-        puntos: 0
+        telefono_es_mismo: telefonoEsMismo,
+        fidelidad_puntos: 0
       }, {
         onConflict: 'rut',
         ignoreDuplicates: false
@@ -236,10 +237,10 @@ app.post('/api/pedido', async (req, res) => {
         cliente_id: clienteId,
         total,
         estado: 'pendiente_pago',
-        carrito: JSON.stringify(carrito),
+        carrito_json: carrito,
         fecha_envio: fechaEnvio,
         horario_envio: horarioEnvio,
-        mensaje_personalizacion: mensajePersonalizacion || '',
+        texto_personalizacion: mensajePersonalizacion || '',
         tipo_diseno: tipoDiseno || 'solo_texto',
         imagen_url: imagenUrl,
         canal: 'web',
@@ -308,12 +309,19 @@ app.post('/api/flow/confirmacion', async (req, res) => {
         .single();
 
       if (pedido) {
+        // Obtener métricas existentes del día
+        const { data: metricaExistente } = await supabase
+          .from('metricas_diarias')
+          .select('*')
+          .eq('fecha', hoy)
+          .single();
+
         await supabase
           .from('metricas_diarias')
           .upsert({
             fecha: hoy,
-            ventas_total: pedido.total,
-            pedidos_count: 1
+            ingresos: (metricaExistente?.ingresos || 0) + pedido.total,
+            pedidos_count: (metricaExistente?.pedidos_count || 0) + 1
           }, {
             onConflict: 'fecha',
             ignoreDuplicates: false
@@ -522,7 +530,7 @@ app.get('/api/admin/metricas-avanzadas', adminGuard, async (req, res) => {
     const { data: productos } = await supabase.from('productos').select('id, nombre, categoria, precio');
     const { data: pedidos } = await supabase
       .from('pedidos')
-      .select('carrito, total, fecha, estado')
+      .select('carrito_json, total, fecha, estado')
       .eq('estado', 'pagado')
       .gte('fecha', hace30Dias);
 
@@ -531,16 +539,20 @@ app.get('/api/admin/metricas-avanzadas', adminGuard, async (req, res) => {
 
     pedidos?.forEach(pedido => {
       try {
-        const carrito = typeof pedido.carrito === 'string' ? JSON.parse(pedido.carrito) : pedido.carrito;
+        const carrito = pedido.carrito_json || [];
         carrito.forEach(item => {
-          const producto = productos?.find(p => p.id === item.id);
+          const producto = productos?.find(p => p.id === item.productoId || p.id === item.id);
           if (producto) {
             const cat = producto.categoria || 'general';
-            ventasPorCategoria[cat] = (ventasPorCategoria[cat] || 0) + (item.precio * item.cantidad);
-            productosMasVendidos[producto.nombre] = (productosMasVendidos[producto.nombre] || 0) + item.cantidad;
+            const precio = item.precioUnitario || item.precio || producto.precio;
+            const cantidad = item.cantidad || 1;
+            ventasPorCategoria[cat] = (ventasPorCategoria[cat] || 0) + (precio * cantidad);
+            productosMasVendidos[producto.nombre] = (productosMasVendidos[producto.nombre] || 0) + cantidad;
           }
         });
-      } catch (e) {}
+      } catch (e) {
+        console.error('Error procesando carrito:', e);
+      }
     });
 
     const topProductos = Object.entries(productosMasVendidos)
