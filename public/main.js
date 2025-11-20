@@ -327,6 +327,12 @@ const authenticateAdmin = async (token) => {
     // Verificar si hay error de configuración
     if (data.error) {
       console.error('Error del servidor:', data);
+
+      // Mostrar mensaje específico si es problema de Supabase
+      if (data.message && data.message.includes('Base de datos no configurada')) {
+        throw new Error('⚠️ Supabase no configurado. Ve a Render → Environment y agrega SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY');
+      }
+
       throw new Error(data.message || data.error);
     }
 
