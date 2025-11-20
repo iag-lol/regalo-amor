@@ -19,10 +19,18 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+// Validar variables de entorno críticas
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_KEY || SUPABASE_URL.includes('TU_SUPABASE')) {
+  console.error('❌ ERROR: Supabase no está configurado');
+  console.error('Configura SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY en las variables de entorno de Render');
+}
+
+const supabase = SUPABASE_URL && SUPABASE_KEY && !SUPABASE_URL.includes('TU_SUPABASE')
+  ? createClient(SUPABASE_URL, SUPABASE_KEY)
+  : null;
 
 // Middleware de autenticación admin
 const adminGuard = (req, res, next) => {
@@ -36,9 +44,34 @@ const adminGuard = (req, res, next) => {
   next();
 };
 
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  const isSupabaseConfigured = supabase !== null;
+  const isFlowConfigured = process.env.FLOW_API_KEY && !process.env.FLOW_API_KEY.includes('TU_FLOW');
+
+  res.json({
+    ok: true,
+    timestamp: new Date().toISOString(),
+    supabase: isSupabaseConfigured ? 'configurado' : '❌ NO CONFIGURADO',
+    flow: isFlowConfigured ? 'configurado' : 'no configurado (opcional)',
+    admin: process.env.ADMIN_PASSWORD ? 'configurado' : 'usando default',
+    message: isSupabaseConfigured
+      ? 'Sistema funcionando correctamente'
+      : '⚠️ Configura Supabase en las variables de entorno de Render'
+  });
+});
+
 // GET /api/productos
 app.get('/api/productos', async (req, res) => {
   try {
+    if (!supabase) {
+      return res.status(500).json({
+        ok: false,
+        message: '⚠️ Base de datos no configurada. Configura Supabase en las variables de entorno de Render.',
+        config_required: 'SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY'
+      });
+    }
+
     const { data, error } = await supabase
       .from('productos')
       .select('*')
@@ -50,7 +83,7 @@ app.get('/api/productos', async (req, res) => {
     res.json({ ok: true, productos: data });
   } catch (error) {
     console.error('Error al obtener productos:', error);
-    res.status(500).json({ ok: false, message: 'Error al obtener productos' });
+    res.status(500).json({ ok: false, message: 'Error al obtener productos', error: error.message });
   }
 });
 
@@ -286,6 +319,14 @@ app.post('/api/admin/check-password', async (req, res) => {
 // GET /api/admin/resumen
 app.get('/api/admin/resumen', adminGuard, async (req, res) => {
   try {
+    if (!supabase) {
+      return res.status(500).json({
+        error: 'Base de datos no configurada',
+        message: 'Debes configurar SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY en las variables de entorno de Render',
+        instructions: 'Ve a Render Dashboard → Tu servicio → Environment → Add Environment Variable'
+      });
+    }
+
     const hoy = new Date().toISOString().split('T')[0];
 
     // Pedidos de hoy
