@@ -42,6 +42,36 @@ const safeNumber = (value, defaultValue = 0) => {
   return Number.isFinite(parsed) ? parsed : defaultValue;
 };
 
+const stripDiacritics = (text = '') =>
+  text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+const toISODateString = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const WEEK_DAYS = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+
+// Permite recibir "Martes" o "2024-05-21" y devolver siempre fecha ISO
+const normalizeFechaEnvio = (value) => {
+  if (!value) return null;
+  const trimmed = String(value).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return trimmed;
+
+  const normalized = stripDiacritics(trimmed.toLowerCase());
+  const dayIndex = WEEK_DAYS.indexOf(normalized);
+  if (dayIndex === -1) return null;
+
+  const today = new Date();
+  const target = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const diff = (dayIndex - target.getDay() + 7) % 7;
+  target.setDate(target.getDate() + diff);
+
+  return toISODateString(target);
+};
+
 // Middleware de autenticación admin
 const adminGuard = (req, res, next) => {
   const token = req.headers['x-admin-token'];
@@ -177,6 +207,14 @@ app.post('/api/pedido', async (req, res) => {
       });
     }
 
+    const fechaEnvioISO = normalizeFechaEnvio(fechaEnvio);
+    if (!fechaEnvioISO) {
+      return res.status(400).json({
+        ok: false,
+        message: 'Fecha de envío inválida. Elige un día disponible del listado.'
+      });
+    }
+
     // Upsert cliente
     const { data: clienteData, error: clienteError } = await supabase
       .from('clientes')
@@ -248,7 +286,7 @@ app.post('/api/pedido', async (req, res) => {
         total,
         estado: 'pendiente_pago',
         carrito_json: carrito,
-        fecha_envio: fechaEnvio,
+        fecha_envio: fechaEnvioISO,
         horario_envio: horarioEnvio,
         texto_personalizacion: mensajePersonalizacion || '',
         tipo_diseno: tipoDiseno || 'solo_texto',
