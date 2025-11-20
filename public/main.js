@@ -314,8 +314,22 @@ const authenticateAdmin = async (token) => {
     const response = await fetch('/api/admin/resumen', {
       headers: { 'x-admin-token': token },
     });
-    if (!response.ok) throw new Error('Credenciales inválidas');
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('Error de autenticación:', errorData);
+      const mensaje = errorData.hint || errorData.message || 'Credenciales inválidas';
+      throw new Error(mensaje);
+    }
+
     const data = await response.json();
+
+    // Verificar si hay error de configuración
+    if (data.error) {
+      console.error('Error del servidor:', data);
+      throw new Error(data.message || data.error);
+    }
+
     state.adminToken = token;
     localStorage.setItem('admin-token', token);
     elements.adminError.textContent = '';
@@ -324,6 +338,7 @@ const authenticateAdmin = async (token) => {
     renderAdminResumen(data);
     await loadAdminExtras();
   } catch (error) {
+    console.error('Error completo:', error);
     elements.adminError.textContent = error.message;
     throw error;
   }

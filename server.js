@@ -37,8 +37,23 @@ const adminGuard = (req, res, next) => {
   const token = req.headers['x-admin-token'];
   const adminPassword = process.env.ADMIN_PASSWORD || 'RegaloAmor2024';
 
-  if (!token || token !== adminPassword) {
-    return res.status(401).json({ error: 'No autorizado' });
+  console.log('[Admin Auth] Intento de autenticación');
+  console.log('[Admin Auth] Contraseña configurada:', adminPassword);
+  console.log('[Admin Auth] Token recibido:', token ? '***' + token.slice(-4) : 'NO ENVIADO');
+
+  if (!token) {
+    return res.status(401).json({
+      error: 'No autorizado',
+      message: 'No se envió contraseña'
+    });
+  }
+
+  if (token !== adminPassword) {
+    return res.status(401).json({
+      error: 'No autorizado',
+      message: 'Contraseña incorrecta',
+      hint: `La contraseña configurada es: ${adminPassword}`
+    });
   }
 
   next();
