@@ -9,19 +9,24 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./styles.css" />
   <style>
+    body {
+      padding-bottom: 0;
+    }
+
     .thank-you-container {
-      min-height: 80vh;
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 2rem;
+      padding: 1rem;
     }
 
     .thank-you-card {
       background: var(--surface);
       border-radius: var(--radius-xl);
-      padding: 4rem 3rem;
-      max-width: 600px;
+      padding: 2.5rem 2rem;
+      max-width: 900px;
+      width: 100%;
       text-align: center;
       border: 1px solid var(--border);
       box-shadow: var(--shadow-lg);
@@ -29,84 +34,120 @@
 
     .thank-you-card h1 {
       font-family: 'Playfair Display', serif;
-      font-size: 2.5rem;
-      margin: 0 0 1rem;
+      font-size: 2rem;
+      margin: 0 0 0.5rem;
       color: var(--accent);
     }
 
     .thank-you-card .icon {
-      width: 80px;
-      height: 80px;
-      margin: 0 auto 2rem;
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 1rem;
       border-radius: 50%;
       background: var(--accent-gradient);
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
-      font-size: 3rem;
+      font-size: 2rem;
     }
 
-    .thank-you-card p {
+    .thank-you-card > p {
       color: var(--muted);
-      line-height: 1.8;
-      font-size: 1.1rem;
+      line-height: 1.6;
+      font-size: 1rem;
+      margin: 0.75rem 0 1.5rem;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
       margin: 1.5rem 0;
     }
 
-    .thank-you-card .highlight {
+    .info-box {
       background: var(--bg-soft);
-      padding: 1.5rem;
+      padding: 1.25rem;
       border-radius: var(--radius-md);
-      margin: 2rem 0;
       border: 1px solid var(--border-light);
+      text-align: left;
     }
 
-    .thank-you-card .highlight strong {
+    .info-box h3 {
+      margin: 0 0 0.75rem;
       color: var(--accent);
-      font-size: 1.2rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .info-box ul {
+      margin: 0;
+      padding-left: 1.25rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .info-box li {
+      margin: 0.4rem 0;
+      line-height: 1.5;
+    }
+
+    .info-box li strong {
+      color: var(--ink);
+    }
+
+    .highlight {
+      background: var(--accent-gradient);
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius-md);
+      margin: 1.5rem 0;
+    }
+
+    .highlight strong {
+      font-size: 1rem;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .highlight p {
+      margin: 0;
+      font-size: 0.85rem;
+      opacity: 0.9;
+      color: white;
     }
 
     .actions {
       display: flex;
-      gap: 1rem;
+      gap: 0.75rem;
       justify-content: center;
-      margin-top: 2.5rem;
+      margin-top: 1.5rem;
       flex-wrap: wrap;
     }
 
-    .order-details {
-      text-align: left;
-      background: var(--bg-soft);
-      padding: 1.5rem;
-      border-radius: var(--radius-md);
-      margin: 2rem 0;
-      border: 1px solid var(--border-light);
+    .order-number {
+      margin-top: 1.25rem;
+      font-size: 0.85rem;
+      color: var(--muted-light);
     }
 
-    .order-details h3 {
-      margin: 0 0 1rem;
+    .order-number strong {
       color: var(--accent);
-      font-size: 1.1rem;
-    }
-
-    .order-details ul {
-      margin: 0;
-      padding-left: 1.5rem;
-      color: var(--muted);
-    }
-
-    .order-details li {
-      margin: 0.5rem 0;
+      font-family: monospace;
     }
 
     @media (max-width: 640px) {
       .thank-you-card {
-        padding: 2rem 1.5rem;
+        padding: 2rem 1.25rem;
       }
 
       .thank-you-card h1 {
-        font-size: 2rem;
+        font-size: 1.75rem;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
       }
 
       .actions {
@@ -134,35 +175,33 @@
   <div class="thank-you-container">
     <div class="thank-you-card">
       <div class="icon" id="thankYouIcon">✓</div>
-      <h1 id="thankYouTitle">¡Pago recibido!</h1>
-      <p id="thankYouMessage">Gracias por confiar en Regalo Amor. Tu pedido ha sido confirmado y ya estamos trabajando en personalizarlo.</p>
+      <h1 id="thankYouTitle">¡Pedido recibido!</h1>
+      <p id="thankYouMessage">Tu pedido fue registrado con éxito. Te contactaremos para coordinar el pago.</p>
 
       <div class="highlight" id="thankYouHighlight">
-        <strong>Te enviaremos un email de confirmación</strong>
-        <p style="margin-top: 0.5rem; font-size: 0.95rem;">Revisa tu bandeja de entrada y spam</p>
+        <strong>Pago pendiente de confirmación</strong>
+        <p>Nuestro equipo enviará el enlace o los datos de transferencia a tu correo y WhatsApp en las próximas horas.</p>
       </div>
 
-      <div class="order-details">
-        <h3>¿Qué sigue ahora?</h3>
-        <ul>
-          <li><strong>1-2 horas:</strong> Recibirás confirmación por email con los detalles de tu pedido</li>
-          <li><strong>24 horas:</strong> Te enviaremos por WhatsApp una vista previa del diseño personalizado</li>
-          <li><strong>2-3 días:</strong> Tu pedido estará listo y lo enviaremos a tu dirección</li>
-          <li><strong>Día de entrega:</strong> Te avisamos 1 hora antes de que llegue</li>
-        </ul>
+      <div class="info-grid">
+        <div class="info-box">
+          <h3>¿Qué sigue ahora?</h3>
+          <ul>
+            <li><strong>1-2 horas:</strong> Recibirás confirmación por email con los detalles de tu pedido</li>
+            <li><strong>24 horas:</strong> Te enviaremos por WhatsApp una vista previa del diseño personalizado</li>
+            <li><strong>2-3 días:</strong> Tu pedido estará listo y lo enviaremos a tu dirección</li>
+            <li><strong>Día de entrega:</strong> Te avisamos 1 hora antes de que llegue</li>
+          </ul>
+        </div>
       </div>
-
-      <p style="font-size: 0.95rem; color: var(--muted-light);">
-        Si tienes alguna pregunta, contáctanos por WhatsApp o email
-      </p>
 
       <div class="actions">
         <a class="primary-btn" href="/">Volver a la tienda</a>
         <a class="ghost-btn" href="https://wa.me/56912345678?text=Hola,%20acabo%20de%20hacer%20un%20pedido" target="_blank">Escribir por WhatsApp</a>
       </div>
 
-      <p style="margin-top: 2rem; font-size: 0.85rem; color: var(--muted-light);">
-        Número de orden: <span id="orderNumber">---</span>
+      <p class="order-number">
+        Número de orden: <strong id="orderNumber">---</strong>
       </p>
     </div>
   </div>
@@ -178,16 +217,19 @@
 
     const manualPayment = urlParams.get('manualPayment') === 'true';
     if (manualPayment) {
+      // Ya está configurado por defecto para pago manual
       document.getElementById('thankYouIcon').textContent = '⌛';
-      document.getElementById('thankYouTitle').textContent = '¡Pedido recibido!';
-      document.getElementById('thankYouMessage').textContent = 'Tu pedido fue registrado con éxito. Te contactaremos para coordinar el pago.';
+    } else {
+      // Si viene de Flow (pago exitoso)
+      document.getElementById('thankYouIcon').textContent = '✓';
+      document.getElementById('thankYouTitle').textContent = '¡Pago recibido!';
+      document.getElementById('thankYouMessage').textContent = 'Gracias por confiar en Regalo Amor. Tu pedido ha sido confirmado y ya estamos trabajando en personalizarlo.';
+
       const highlight = document.getElementById('thankYouHighlight');
       if (highlight) {
         highlight.innerHTML = `
-          <strong>Pago pendiente de confirmación</strong>
-          <p style="margin-top: 0.5rem; font-size: 0.95rem;">
-            Nuestro equipo enviará el enlace o los datos de transferencia a tu correo y WhatsApp en las próximas horas.
-          </p>
+          <strong>Te enviaremos un email de confirmación</strong>
+          <p>Revisa tu bandeja de entrada y spam</p>
         `;
       }
     }
