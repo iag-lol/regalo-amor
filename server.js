@@ -32,6 +32,12 @@ const supabase = SUPABASE_URL && SUPABASE_KEY && !SUPABASE_URL.includes('TU_SUPA
   ? createClient(SUPABASE_URL, SUPABASE_KEY)
   : null;
 
+const FLOW_CONFIGURED = Boolean(
+  process.env.FLOW_API_KEY &&
+  process.env.FLOW_API_SECRET &&
+  !process.env.FLOW_API_KEY.includes('TU_FLOW')
+);
+
 // Normaliza strings numéricos (ej. "$12.990") a números seguros
 const safeNumber = (value, defaultValue = 0) => {
   if (value === null || value === undefined) return defaultValue;
@@ -102,7 +108,7 @@ const adminGuard = (req, res, next) => {
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   const isSupabaseConfigured = supabase !== null;
-  const isFlowConfigured = process.env.FLOW_API_KEY && !process.env.FLOW_API_KEY.includes('TU_FLOW');
+  const isFlowConfigured = FLOW_CONFIGURED;
 
   res.json({
     ok: true,
@@ -301,20 +307,38 @@ app.post('/api/pedido', async (req, res) => {
 
     const pedidoId = pedidoData.id;
 
-    // Crear pago en Flow
-    const flowPayment = await createFlowPayment({
-      amount: total,
-      commerceOrder: String(pedidoId),
-      subject: `Pedido personalizado #${pedidoId}`,
-      email,
-      urlConfirmation: `${process.env.BASE_URL}/api/flow/confirmacion`,
-      urlReturn: `${process.env.BASE_URL}/gracias.html`
-    });
+    const manualThanksUrl = `/gracias.html?commerceOrder=${pedidoId}&manualPayment=true`;
+    let urlPago = manualThanksUrl;
+    let requierePagoManual = false;
+    let mensajePago = null;
+
+    if (FLOW_CONFIGURED) {
+      try {
+        const flowPayment = await createFlowPayment({
+          amount: total,
+          commerceOrder: String(pedidoId),
+          subject: `Pedido personalizado #${pedidoId}`,
+          email,
+          urlConfirmation: `${process.env.BASE_URL}/api/flow/confirmacion`,
+          urlReturn: `${process.env.BASE_URL}/gracias.html`
+        });
+        urlPago = flowPayment.url;
+      } catch (flowError) {
+        console.error('Error creando pago en Flow:', flowError);
+        requierePagoManual = true;
+        mensajePago = 'No pudimos iniciar el pago automático. Te contactaremos para confirmar el pago.';
+      }
+    } else {
+      requierePagoManual = true;
+      mensajePago = 'Flow no está configurado. Te contactaremos para coordinar el pago.';
+    }
 
     res.json({
       ok: true,
-      urlPago: flowPayment.url,
-      pedidoId
+      urlPago,
+      pedidoId,
+      requierePagoManual,
+      mensajePago
     });
 
   } catch (error) {

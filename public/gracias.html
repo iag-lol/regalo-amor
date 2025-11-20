@@ -133,11 +133,11 @@
 
   <div class="thank-you-container">
     <div class="thank-you-card">
-      <div class="icon">✓</div>
-      <h1>¡Pago recibido!</h1>
-      <p>Gracias por confiar en Regalo Amor. Tu pedido ha sido confirmado y ya estamos trabajando en personalizarlo.</p>
+      <div class="icon" id="thankYouIcon">✓</div>
+      <h1 id="thankYouTitle">¡Pago recibido!</h1>
+      <p id="thankYouMessage">Gracias por confiar en Regalo Amor. Tu pedido ha sido confirmado y ya estamos trabajando en personalizarlo.</p>
 
-      <div class="highlight">
+      <div class="highlight" id="thankYouHighlight">
         <strong>Te enviaremos un email de confirmación</strong>
         <p style="margin-top: 0.5rem; font-size: 0.95rem;">Revisa tu bandeja de entrada y spam</p>
       </div>
@@ -174,6 +174,22 @@
 
     if (commerceOrder) {
       document.getElementById('orderNumber').textContent = commerceOrder.substring(0, 8).toUpperCase();
+    }
+
+    const manualPayment = urlParams.get('manualPayment') === 'true';
+    if (manualPayment) {
+      document.getElementById('thankYouIcon').textContent = '⌛';
+      document.getElementById('thankYouTitle').textContent = '¡Pedido recibido!';
+      document.getElementById('thankYouMessage').textContent = 'Tu pedido fue registrado con éxito. Te contactaremos para coordinar el pago.';
+      const highlight = document.getElementById('thankYouHighlight');
+      if (highlight) {
+        highlight.innerHTML = `
+          <strong>Pago pendiente de confirmación</strong>
+          <p style="margin-top: 0.5rem; font-size: 0.95rem;">
+            Nuestro equipo enviará el enlace o los datos de transferencia a tu correo y WhatsApp en las próximas horas.
+          </p>
+        `;
+      }
     }
 
     // Limpiar carrito del localStorage

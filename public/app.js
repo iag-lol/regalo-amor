@@ -204,7 +204,11 @@ async function confirmarPedido() {
     const data = await res.json();
 
     if (data.ok) {
-      window.location.href = data.urlPago;
+      const redirectUrl = data.urlPago || `/gracias.html?commerceOrder=${data.pedidoId || ''}`;
+      if (data.requierePagoManual) {
+        alert(data.mensajePago || 'Pedido recibido. Te contactaremos para coordinar el pago.');
+      }
+      window.location.href = redirectUrl;
     } else {
       alert('Error: ' + data.message);
       btn.disabled = false;

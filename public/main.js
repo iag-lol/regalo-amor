@@ -323,7 +323,15 @@ const submitPedido = async () => {
     if (data.puntosAcumulados != null) {
       elements.puntosCliente.textContent = `Tus puntos acumulados: ${data.puntosAcumulados}`;
     }
-    window.location.href = data.urlPago;
+    const redirectTarget = data.urlPago || `/gracias.html?commerceOrder=${data.pedidoId || ''}`;
+    if (data.requierePagoManual) {
+      showToast(data.mensajePago || 'Pedido recibido. Te contactaremos para coordinar el pago.', 'info');
+      setTimeout(() => {
+        window.location.href = redirectTarget;
+      }, 1200);
+    } else {
+      window.location.href = redirectTarget;
+    }
   } catch (error) {
     console.error(error);
     showToast(error.message || 'Error al procesar el pedido', 'error');
