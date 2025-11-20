@@ -9,8 +9,9 @@ export async function createFlowPayment({
   urlReturn
 }) {
   const apiKey = process.env.FLOW_API_KEY;
-  const apiSecret = process.env.FLOW_API_SECRET;
-  const ambiente = process.env.FLOW_AMBIENTE || 'sandbox';
+  // Usar FLOW_SECRET_KEY (nombre de variable en Render)
+  const apiSecret = process.env.FLOW_SECRET_KEY || process.env.FLOW_API_SECRET;
+  const ambiente = process.env.FLOW_AMBIENTE || process.env.FLOW_ENV || 'sandbox';
 
   const baseUrl = ambiente === 'production'
     ? 'https://www.flow.cl/api'

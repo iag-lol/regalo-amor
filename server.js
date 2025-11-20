@@ -32,9 +32,10 @@ const supabase = SUPABASE_URL && SUPABASE_KEY && !SUPABASE_URL.includes('TU_SUPA
   ? createClient(SUPABASE_URL, SUPABASE_KEY)
   : null;
 
+// Adaptado para usar FLOW_SECRET_KEY (nombre de variable en Render)
 const FLOW_CONFIGURED = Boolean(
   process.env.FLOW_API_KEY &&
-  process.env.FLOW_API_SECRET &&
+  process.env.FLOW_SECRET_KEY &&
   !process.env.FLOW_API_KEY.includes('TU_FLOW')
 );
 
@@ -314,13 +315,17 @@ app.post('/api/pedido', async (req, res) => {
 
     if (FLOW_CONFIGURED) {
       try {
+        // Usar las variables de Render directamente
+        const urlConfirmation = process.env.FLOW_URL_CONFIRMATION || `${process.env.FLOW_BASE_URL}/api/flow/confirmacion`;
+        const urlReturn = process.env.FLOW_URL_RETURN || `${process.env.FLOW_BASE_URL}/gracias.html`;
+
         const flowPayment = await createFlowPayment({
           amount: total,
           commerceOrder: String(pedidoId),
           subject: `Pedido personalizado #${pedidoId}`,
           email,
-          urlConfirmation: `${process.env.BASE_URL}/api/flow/confirmacion`,
-          urlReturn: `${process.env.BASE_URL}/gracias.html`
+          urlConfirmation,
+          urlReturn
         });
         urlPago = flowPayment.url;
       } catch (flowError) {
