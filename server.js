@@ -32,6 +32,16 @@ const supabase = SUPABASE_URL && SUPABASE_KEY && !SUPABASE_URL.includes('TU_SUPA
   ? createClient(SUPABASE_URL, SUPABASE_KEY)
   : null;
 
+// Normaliza strings numéricos (ej. "$12.990") a números seguros
+const safeNumber = (value, defaultValue = 0) => {
+  if (value === null || value === undefined) return defaultValue;
+  const normalized = typeof value === 'string'
+    ? value.replace(/[^0-9.-]/g, '')
+    : value;
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) ? parsed : defaultValue;
+};
+
 // Middleware de autenticación admin
 const adminGuard = (req, res, next) => {
   const token = req.headers['x-admin-token'];
