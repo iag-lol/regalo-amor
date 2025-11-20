@@ -9,6 +9,50 @@ const state = {
 const currency = (value = 0) =>
   new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(value);
 
+// Sistema de notificaciones toast
+const showToast = (message, type = 'info', title = '') => {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+
+  const icons = {
+    success: '✓',
+    error: '✕',
+    warning: '⚠',
+    info: 'ℹ'
+  };
+
+  const titles = {
+    success: title || 'Éxito',
+    error: title || 'Error',
+    warning: title || 'Advertencia',
+    info: title || 'Información'
+  };
+
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `
+    <div class="toast-icon">${icons[type] || icons.info}</div>
+    <div class="toast-content">
+      <div class="toast-title">${titles[type]}</div>
+      <div class="toast-message">${message}</div>
+    </div>
+    <button class="toast-close" aria-label="Cerrar">×</button>
+  `;
+
+  container.appendChild(toast);
+
+  const closeBtn = toast.querySelector('.toast-close');
+  const remove = () => {
+    toast.classList.add('removing');
+    setTimeout(() => toast.remove(), 300);
+  };
+
+  closeBtn.addEventListener('click', remove);
+
+  // Auto-cerrar después de 5 segundos
+  setTimeout(remove, 5000);
+};
+
 const elements = {
   listaProductos: document.getElementById('listaProductos'),
   categoriaFiltro: document.getElementById('categoriaFiltro'),
@@ -112,8 +156,10 @@ const addToCart = (productoId) => {
       nombre: producto.nombre,
       cantidad: 1,
       precioUnitario: producto.precio,
+      imagenUrl: producto.imagen_url, // Agregar imagen del producto
     });
   }
+  showToast('Producto agregado al carrito', 'success');
   renderCart();
 };
 
@@ -139,7 +185,8 @@ const renderCart = () => {
     const row = document.createElement('div');
     row.className = 'cart-line';
     row.innerHTML = `
-      <div>
+      ${item.imagenUrl ? `<img src="${item.imagenUrl}" alt="${item.nombre}" class="cart-line-image" />` : ''}
+      <div class="cart-line-info">
         <strong>${item.nombre}</strong>
         <p>${currency(item.precioUnitario)} x ${item.cantidad}</p>
       </div>
@@ -247,7 +294,7 @@ const collectFormData = () => {
 
 const submitPedido = async () => {
   if (!state.carrito.length) {
-    alert('El carrito está vacío');
+    showToast('El carrito está vacío', 'warning');
     return;
   }
 
@@ -255,7 +302,7 @@ const submitPedido = async () => {
   const required = ['nombre', 'rut', 'email', 'direccion', 'comuna', 'telefonoWsp', 'fechaEnvio', 'horarioEnvio'];
   const missing = required.filter((field) => !payload[field]);
   if (missing.length) {
-    alert('Por favor completa todos los campos requeridos.');
+    showToast('Por favor completa todos los campos requeridos', 'warning');
     return;
   }
 
@@ -271,7 +318,7 @@ const submitPedido = async () => {
     });
     const data = await response.json();
     if (!response.ok || !data.ok) {
-      throw new Error(data.error || 'No se pudo crear el pedido');
+      throw new Error(data.message || data.error || 'No se pudo crear el pedido');
     }
     if (data.puntosAcumulados != null) {
       elements.puntosCliente.textContent = `Tus puntos acumulados: ${data.puntosAcumulados}`;
@@ -279,7 +326,7 @@ const submitPedido = async () => {
     window.location.href = data.urlPago;
   } catch (error) {
     console.error(error);
-    alert(error.message || 'Error en el pago');
+    showToast(error.message || 'Error al procesar el pedido', 'error');
   } finally {
     elements.btnConfirmar.disabled = false;
     elements.btnConfirmar.textContent = originalText;
@@ -377,27 +424,44 @@ const fetchPedidosRecientes = async () => {
     const response = await fetch('/api/admin/pedidos', {
       headers: { 'x-admin-token': state.adminToken },
     });
-    const pedidos = await response.json();
-    elements.pedidosRecientes.innerHTML = (pedidos || [])
+    const data = await response.json();
+
+    // Validar que sea un array
+    if (!response.ok || !data.ok) {
+      console.error('Error al cargar pedidos:', data.message || 'Error desconocido');
+      elements.pedidosRecientes.innerHTML = '<p class="nota">Error al cargar pedidos</p>';
+      return;
+    }
+
+    const pedidos = data.pedidos || [];
+
+    if (!Array.isArray(pedidos)) {
+      console.error('Respuesta de pedidos no es un array:', pedidos);
+      elements.pedidosRecientes.innerHTML = '<p class="nota">Error: formato de datos incorrecto</p>';
+      return;
+    }
+
+    elements.pedidosRecientes.innerHTML = pedidos
       .map((pedido) => {
-        const cliente = pedido.cliente || {};
+        const cliente = pedido.clientes || pedido.cliente || {};
         const imagenBtn = pedido.imagen_url
           ? `<a href="${pedido.imagen_url}" class="cta secondary" target="_blank">Ver imagen</a>`
           : '';
         return `
           <div class="pedido-card">
-            <strong>Pedido #${pedido.id}</strong>
+            <strong>Pedido #${String(pedido.id).substring(0, 8)}</strong>
             <span>${cliente.nombre || 'Cliente'}</span>
             <span>Estado: ${pedido.estado}</span>
             <span>Total: ${currency(pedido.total)}</span>
-            <span>${pedido.texto_personalizacion || ''}</span>
+            <span>${pedido.mensaje_personalizacion || pedido.texto_personalizacion || ''}</span>
             ${imagenBtn}
           </div>
         `;
       })
-      .join('');
+      .join('') || '<p class="nota">No hay pedidos recientes</p>';
   } catch (error) {
     console.error('No se pudieron cargar pedidos admin', error);
+    elements.pedidosRecientes.innerHTML = '<p class="nota">Error al cargar pedidos</p>';
   }
 };
 
@@ -408,9 +472,9 @@ const fetchSiiInfo = async () => {
     });
     const sii = await response.json();
     elements.siiInfo.innerHTML = `
-      <p>Total ventas mes: <strong>${currency(sii.totalVentasMes || 0)}</strong></p>
-      <p>Fecha corte: ${sii.fechaCorte}</p>
-      <p>Estado: ${sii.estadoPagoImpuestos}</p>
+      <p>Total ventas mes: <strong>${currency(sii.ventasMes || 0)}</strong></p>
+      <p>IVA estimado: <strong>${currency(sii.ivaEstimado || 0)}</strong></p>
+      <p>Estado: ${sii.pagado ? 'Pagado' : 'Pendiente'}</p>
     `;
   } catch (error) {
     console.error('No se pudo obtener SII', error);
@@ -448,17 +512,19 @@ const saveConfigEnvios = async (event) => {
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || 'No se pudo guardar');
     elements.configStatus.textContent = 'Configuración guardada';
+    showToast('Configuración guardada correctamente', 'success');
     populateConfigForm(data.config);
     loadConfigEnvios();
   } catch (error) {
     elements.configStatus.textContent = error.message;
+    showToast(error.message, 'error');
   }
 };
 
 const marcarSiiPagado = async () => {
   if (!state.adminToken) return;
   try {
-    const response = await fetch('/api/admin/sii/marcar-pagado', {
+    const response = await fetch('/api/admin/sii/marcar-pago', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -468,9 +534,10 @@ const marcarSiiPagado = async () => {
     });
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || 'Error al marcar SII');
+    showToast('Pago registrado correctamente', 'success');
     fetchSiiInfo();
   } catch (error) {
-    alert(error.message);
+    showToast(error.message, 'error');
   }
 };
 
@@ -515,6 +582,7 @@ const attachEvents = () => {
     elements.clearCart.addEventListener('click', () => {
       state.carrito = [];
       renderCart();
+      showToast('Carrito vaciado', 'info');
     });
   }
   if (elements.floatingCart) {
@@ -813,9 +881,10 @@ const guardarProducto = async (event) => {
 
     cerrarModalProducto();
     loadAdminProductos();
-    alert(`Producto ${isEdit ? 'actualizado' : 'creado'} exitosamente`);
+    showToast(`Producto ${isEdit ? 'actualizado' : 'creado'} exitosamente`, 'success');
   } catch (error) {
     errorEl.textContent = error.message || 'Error al guardar el producto';
+    showToast(error.message || 'Error al guardar el producto', 'error');
   }
 };
 
@@ -838,9 +907,9 @@ const eliminarProducto = async (id) => {
     if (!response.ok) throw new Error('Error al eliminar');
 
     loadAdminProductos();
-    alert('Producto eliminado exitosamente');
+    showToast('Producto eliminado exitosamente', 'success');
   } catch (error) {
-    alert('Error al eliminar el producto');
+    showToast('Error al eliminar el producto', 'error');
   }
 };
 
