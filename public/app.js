@@ -56,19 +56,54 @@ function renderProductos() {
   }).join('');
 }
 
+// Calcula el descuento aplicable según la cantidad
+function calcularDescuentoPorCantidad(descuentosCantidad, cantidad) {
+  if (!descuentosCantidad || descuentosCantidad.length === 0) return 0;
+
+  // Ordenar por cantidad descendente para encontrar el nivel aplicable
+  const niveles = [...descuentosCantidad].sort((a, b) => b.cantidad - a.cantidad);
+
+  for (const nivel of niveles) {
+    if (cantidad >= nivel.cantidad) {
+      return nivel.porcentaje;
+    }
+  }
+  return 0;
+}
+
+// Calcula el precio final con todos los descuentos
+function calcularPrecioConDescuentos(producto, cantidad) {
+  let precio = producto.precio;
+
+  // Primero aplicar descuento general del producto
+  if (producto.descuento > 0) {
+    precio = Math.round(precio * (1 - producto.descuento / 100));
+  }
+
+  // Luego aplicar descuento por cantidad (sobre el precio ya descontado)
+  const descCantidad = calcularDescuentoPorCantidad(producto.descuentos_cantidad, cantidad);
+  if (descCantidad > 0) {
+    precio = Math.round(precio * (1 - descCantidad / 100));
+  }
+
+  return precio;
+}
+
 function agregarAlCarrito(id) {
   const producto = productos.find(p => p.id === id);
   if (!producto) return;
-
-  const precioFinal = producto.descuento > 0
-    ? Math.round(producto.precio * (1 - producto.descuento / 100))
-    : producto.precio;
 
   const itemExistente = carrito.find(item => item.id === id);
   if (itemExistente) {
     itemExistente.cantidad++;
   } else {
-    carrito.push({ ...producto, cantidad: 1, precioFinal });
+    const precioFinal = calcularPrecioConDescuentos(producto, 1);
+    carrito.push({
+      ...producto,
+      cantidad: 1,
+      precioFinal,
+      precioBase: producto.precio
+    });
   }
 
   renderCarrito();
@@ -83,19 +118,47 @@ function renderCarrito() {
     return;
   }
 
-  cartItems.innerHTML = carrito.map(item => `
-    <div class="cart-item">
-      <div>
-        <div class="cart-item-name">${item.nombre}</div>
-        <div class="cart-item-price">$${formatPrice(item.precioFinal)} c/u</div>
-        <div class="cart-quantity">
-          <button class="qty-btn" onclick="cambiarCantidad(${item.id}, -1)">−</button>
-          <span>${item.cantidad}</span>
-          <button class="qty-btn" onclick="cambiarCantidad(${item.id}, 1)">+</button>
+  cartItems.innerHTML = carrito.map(item => {
+    // Recalcular precio con descuento por cantidad actual
+    const precioConDescuento = calcularPrecioConDescuentos(item, item.cantidad);
+    const descuentoCantidad = calcularDescuentoPorCantidad(item.descuentos_cantidad, item.cantidad);
+    const tieneDescuentoCantidad = descuentoCantidad > 0;
+
+    // Precio sin descuento por cantidad (solo descuento general)
+    const precioSinDescCantidad = item.descuento > 0
+      ? Math.round(item.precio * (1 - item.descuento / 100))
+      : item.precio;
+
+    // Actualizar el precio final del item en el carrito
+    item.precioFinal = precioConDescuento;
+
+    return `
+      <div class="cart-item">
+        <div>
+          <div class="cart-item-name">${item.nombre}</div>
+          ${tieneDescuentoCantidad ? `
+            <div class="cart-item-price">
+              <span style="text-decoration: line-through; color: #9ca3af; font-size: 0.85rem;">$${formatPrice(precioSinDescCantidad)}</span>
+              <span style="color: #10b981; font-weight: 600;">$${formatPrice(precioConDescuento)}</span>
+              <span style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; margin-left: 4px;">-${descuentoCantidad}% por ${item.cantidad}+ uds</span>
+            </div>
+          ` : `
+            <div class="cart-item-price">$${formatPrice(precioConDescuento)} c/u</div>
+          `}
+          <div class="cart-quantity">
+            <button class="qty-btn" onclick="cambiarCantidad(${item.id}, -1)">−</button>
+            <span>${item.cantidad}</span>
+            <button class="qty-btn" onclick="cambiarCantidad(${item.id}, 1)">+</button>
+          </div>
+          ${item.descuentos_cantidad && item.descuentos_cantidad.length > 0 && !tieneDescuentoCantidad ? `
+            <div style="font-size: 0.75rem; color: #6b7280; margin-top: 4px;">
+              Compra ${item.descuentos_cantidad[0].cantidad}+ y obtén ${item.descuentos_cantidad[0].porcentaje}% desc.
+            </div>
+          ` : ''}
         </div>
       </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 
   calcularTotal();
 }

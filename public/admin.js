@@ -550,6 +550,12 @@ function openProductoModal(productoId = null) {
   document.getElementById('productoError').textContent = '';
   document.getElementById('productoImagenPreview').classList.remove('active');
 
+  // Limpiar campos de descuentos por cantidad
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById(`descCant${i}Min`).value = '';
+    document.getElementById(`descCant${i}Porc`).value = '';
+  }
+
   if (productoId) {
     title.textContent = 'Editar Producto';
     const producto = productosData.find(p => p.id === productoId);
@@ -562,6 +568,15 @@ function openProductoModal(productoId = null) {
       document.getElementById('productoDescuento').value = producto.descuento || 0;
       document.getElementById('productoDescripcion').value = producto.descripcion || '';
       document.getElementById('productoEsCombo').checked = producto.es_combo || false;
+
+      // Cargar descuentos por cantidad
+      const descuentosCantidad = producto.descuentos_cantidad || [];
+      descuentosCantidad.forEach((desc, index) => {
+        if (index < 4) {
+          document.getElementById(`descCant${index + 1}Min`).value = desc.cantidad || '';
+          document.getElementById(`descCant${index + 1}Porc`).value = desc.porcentaje || '';
+        }
+      });
 
       if (producto.imagen_url) {
         const preview = document.getElementById('productoImagenPreview');
@@ -629,6 +644,18 @@ document.getElementById('productoForm').addEventListener('submit', async (e) => 
   const esCombo = document.getElementById('productoEsCombo').checked;
   const imagenFile = document.getElementById('productoImagen').files[0];
 
+  // Recoger descuentos por cantidad
+  const descuentosCantidad = [];
+  for (let i = 1; i <= 4; i++) {
+    const cantidad = parseInt(document.getElementById(`descCant${i}Min`).value);
+    const porcentaje = parseInt(document.getElementById(`descCant${i}Porc`).value);
+    if (cantidad > 0 && porcentaje > 0) {
+      descuentosCantidad.push({ cantidad, porcentaje });
+    }
+  }
+  // Ordenar por cantidad ascendente
+  descuentosCantidad.sort((a, b) => a.cantidad - b.cantidad);
+
   try {
     const formData = new FormData();
     formData.append('nombre', nombre);
@@ -638,6 +665,7 @@ document.getElementById('productoForm').addEventListener('submit', async (e) => 
     formData.append('descuento', descuento);
     formData.append('descripcion', descripcion);
     formData.append('es_combo', esCombo);
+    formData.append('descuentos_cantidad', JSON.stringify(descuentosCantidad));
     if (imagenFile) {
       formData.append('imagen', imagenFile);
     }

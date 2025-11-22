@@ -296,6 +296,67 @@
               <span>Es un combo</span>
             </label>
           </div>
+
+          <!-- Descuentos por Cantidad -->
+          <div class="form-group">
+            <label>Descuentos por Cantidad</label>
+            <small style="display: block; margin-bottom: 0.75rem; color: #6b7280;">
+              Define hasta 4 niveles de descuento. Ej: Al comprar 3+ unidades, 10% descuento
+            </small>
+
+            <div class="descuento-cantidad-row">
+              <div class="descuento-cantidad-item">
+                <label>Desde</label>
+                <input type="number" id="descCant1Min" class="input" placeholder="2" min="2">
+                <span>uds.</span>
+              </div>
+              <div class="descuento-cantidad-item">
+                <label>Descuento</label>
+                <input type="number" id="descCant1Porc" class="input" placeholder="5" min="0" max="100">
+                <span>%</span>
+              </div>
+            </div>
+
+            <div class="descuento-cantidad-row">
+              <div class="descuento-cantidad-item">
+                <label>Desde</label>
+                <input type="number" id="descCant2Min" class="input" placeholder="5" min="2">
+                <span>uds.</span>
+              </div>
+              <div class="descuento-cantidad-item">
+                <label>Descuento</label>
+                <input type="number" id="descCant2Porc" class="input" placeholder="10" min="0" max="100">
+                <span>%</span>
+              </div>
+            </div>
+
+            <div class="descuento-cantidad-row">
+              <div class="descuento-cantidad-item">
+                <label>Desde</label>
+                <input type="number" id="descCant3Min" class="input" placeholder="10" min="2">
+                <span>uds.</span>
+              </div>
+              <div class="descuento-cantidad-item">
+                <label>Descuento</label>
+                <input type="number" id="descCant3Porc" class="input" placeholder="15" min="0" max="100">
+                <span>%</span>
+              </div>
+            </div>
+
+            <div class="descuento-cantidad-row">
+              <div class="descuento-cantidad-item">
+                <label>Desde</label>
+                <input type="number" id="descCant4Min" class="input" placeholder="20" min="2">
+                <span>uds.</span>
+              </div>
+              <div class="descuento-cantidad-item">
+                <label>Descuento</label>
+                <input type="number" id="descCant4Porc" class="input" placeholder="20" min="0" max="100">
+                <span>%</span>
+              </div>
+            </div>
+          </div>
+
           <div class="form-actions">
             <button type="button" id="cancelProducto" class="btn-secondary">Cancelar</button>
             <button type="submit" class="btn-primary">Guardar</button>

@@ -647,6 +647,80 @@ select.input:focus {
 }
 
 /* ============================================
+   DESCUENTOS POR CANTIDAD
+   ============================================ */
+
+.descuento-cantidad-row {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  padding: 0.75rem;
+  background: var(--bg-soft);
+  border-radius: var(--radius-md);
+  margin-bottom: 0.5rem;
+  border: 1px solid var(--border-light);
+}
+
+.descuento-cantidad-row:hover {
+  border-color: var(--border);
+}
+
+.descuento-cantidad-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.descuento-cantidad-item label {
+  font-size: 0.8125rem;
+  color: var(--muted);
+  white-space: nowrap;
+  margin-bottom: 0;
+}
+
+.descuento-cantidad-item .input {
+  width: 80px;
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.descuento-cantidad-item span {
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+/* Badge de descuento en carrito */
+.descuento-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.descuento-aplicado {
+  color: var(--success);
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.precio-original {
+  text-decoration: line-through;
+  color: var(--muted-light);
+  font-size: 0.875rem;
+}
+
+.precio-con-descuento {
+  color: var(--success);
+  font-weight: 600;
+}
+
+/* ============================================
    MODALS
    ============================================ */
 

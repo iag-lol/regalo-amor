@@ -692,10 +692,23 @@ app.post('/api/admin/productos', adminGuard, async (req, res) => {
       descuento,
       es_combo,
       imagenes_galeria,
+      descuentos_cantidad,
     } = req.body;
 
     if (!nombre || !precio) {
       return res.status(400).json({ error: 'Nombre y precio son obligatorios' });
+    }
+
+    // Parsear descuentos_cantidad si viene como string
+    let descuentosCantidadParsed = [];
+    if (descuentos_cantidad) {
+      try {
+        descuentosCantidadParsed = typeof descuentos_cantidad === 'string'
+          ? JSON.parse(descuentos_cantidad)
+          : descuentos_cantidad;
+      } catch (e) {
+        descuentosCantidadParsed = [];
+      }
     }
 
     const payload = {
@@ -709,6 +722,7 @@ app.post('/api/admin/productos', adminGuard, async (req, res) => {
       es_combo: Boolean(es_combo),
       activo: true,
       imagenes_galeria: imagenes_galeria || [],
+      descuentos_cantidad: descuentosCantidadParsed,
     };
 
     const { data, error } = await supabase
@@ -740,6 +754,7 @@ app.put('/api/admin/productos/:id', adminGuard, async (req, res) => {
       es_combo,
       activo,
       imagenes_galeria,
+      descuentos_cantidad,
     } = req.body;
 
     const payload = {};
@@ -753,6 +768,17 @@ app.put('/api/admin/productos/:id', adminGuard, async (req, res) => {
     if (es_combo !== undefined) payload.es_combo = Boolean(es_combo);
     if (activo !== undefined) payload.activo = Boolean(activo);
     if (imagenes_galeria !== undefined) payload.imagenes_galeria = imagenes_galeria;
+
+    // Parsear descuentos_cantidad
+    if (descuentos_cantidad !== undefined) {
+      try {
+        payload.descuentos_cantidad = typeof descuentos_cantidad === 'string'
+          ? JSON.parse(descuentos_cantidad)
+          : descuentos_cantidad;
+      } catch (e) {
+        payload.descuentos_cantidad = [];
+      }
+    }
 
     const { data, error } = await supabase
       .from('productos')
