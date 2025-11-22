@@ -172,39 +172,106 @@
           </section>
           <section class="pane form">
             <header>
-              <p class="eyebrow">Personalización</p>
-              <h3>Completa los datos</h3>
+              <p class="eyebrow">Datos de entrega</p>
+              <h3>Completa tu información</h3>
             </header>
             <form id="pedidoForm">
-              <div class="form-grid">
-                <label>Nombre completo<input type="text" name="nombre" required /></label>
-                <label>RUT<input type="text" name="rut" required /></label>
-                <label>Correo electrónico<input type="email" name="email" required /></label>
-                <label>Dirección<input type="text" name="direccion" required /></label>
-                <label>Comuna<input type="text" name="comuna" required list="comunasList" /></label>
-                <label>Teléfono WhatsApp<input type="tel" name="telefonoWsp" required /></label>
-                <label>Teléfono de llamada<input type="tel" name="telefonoLlamada" required /></label>
-                <label class="checkbox">
-                  <input type="checkbox" name="telefonoEsMismo" /> ¿Es el mismo número?
-                </label>
-                <label>Día de envío<select name="fechaEnvio" id="diasEnvio" required></select></label>
-                <label>Horario<select name="horarioEnvio" id="horariosEnvio" required></select></label>
+              <!-- Sección: Datos personales -->
+              <div class="form-section">
+                <div class="form-section-title">📋 Datos personales</div>
+                <div class="form-grid">
+                  <label>
+                    <span class="label-text">Nombre completo</span>
+                    <input type="text" name="nombre" required placeholder="Tu nombre y apellido" />
+                  </label>
+                  <label>
+                    <span class="label-text">RUT</span>
+                    <input type="text" name="rut" required placeholder="12.345.678-9" />
+                  </label>
+                  <label>
+                    <span class="label-text">Correo electrónico</span>
+                    <input type="email" name="email" required placeholder="tu@email.com" />
+                  </label>
+                </div>
+              </div>
+
+              <!-- Sección: Dirección -->
+              <div class="form-section">
+                <div class="form-section-title">📍 Dirección de entrega</div>
+                <div class="form-grid">
+                  <label>
+                    <span class="label-text">Dirección</span>
+                    <input type="text" name="direccion" required placeholder="Calle, número, depto" />
+                  </label>
+                  <label>
+                    <span class="label-text">Comuna</span>
+                    <input type="text" name="comuna" required list="comunasList" placeholder="Selecciona tu comuna" />
+                  </label>
+                </div>
               </div>
               <datalist id="comunasList"></datalist>
-              <div class="lab-fields">
-                <label>Mensaje especial<textarea id="mensajePersonalizacion" maxlength="240" placeholder="Dedicatoria elegante"></textarea></label>
-                <label>Tipo de diseño
-                  <select id="tipoDiseno">
-                    <option value="solo_texto">Solo texto</option>
-                    <option value="texto_y_imagen">Texto + imagen</option>
-                    <option value="ilustracion_personalizada">Ilustración personalizada</option>
-                  </select>
+
+              <!-- Sección: Contacto -->
+              <div class="form-section">
+                <div class="form-section-title">📱 Contacto</div>
+                <div class="form-grid">
+                  <label>
+                    <span class="label-text">Teléfono WhatsApp</span>
+                    <input type="tel" name="telefonoWsp" required placeholder="+56 9 1234 5678" />
+                  </label>
+                  <label>
+                    <span class="label-text">Teléfono de llamada</span>
+                    <input type="tel" name="telefonoLlamada" required placeholder="+56 9 1234 5678" />
+                  </label>
+                </div>
+                <label class="checkbox">
+                  <input type="checkbox" name="telefonoEsMismo" />
+                  <span>Usar el mismo número para llamadas</span>
                 </label>
-                <label>Sube inspiración (vertical)<input type="file" id="imagenPersonalizacion" accept="image/*" /></label>
-                <div class="image-preview" id="previewImagen"></div>
               </div>
+
+              <!-- Sección: Envío -->
+              <div class="form-section">
+                <div class="form-section-title">🚚 Fecha de entrega</div>
+                <div class="form-grid form-grid-2">
+                  <label>
+                    <span class="label-text">Día de envío</span>
+                    <select name="fechaEnvio" id="diasEnvio" required></select>
+                  </label>
+                  <label>
+                    <span class="label-text">Horario</span>
+                    <select name="horarioEnvio" id="horariosEnvio" required></select>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Sección: Personalización -->
+              <div class="form-section">
+                <div class="form-section-title">✨ Personalización</div>
+                <div class="lab-fields">
+                  <label>
+                    <span class="label-text">Mensaje o dedicatoria</span>
+                    <textarea id="mensajePersonalizacion" maxlength="240" placeholder="Escribe tu mensaje especial aquí..."></textarea>
+                    <span class="char-count">Máximo 240 caracteres</span>
+                  </label>
+                  <label>
+                    <span class="label-text">Tipo de diseño</span>
+                    <select id="tipoDiseno">
+                      <option value="solo_texto">Solo texto</option>
+                      <option value="texto_y_imagen">Texto + imagen</option>
+                      <option value="ilustracion_personalizada">Ilustración personalizada</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span class="label-text">Sube tu imagen (opcional)</span>
+                    <input type="file" id="imagenPersonalizacion" accept="image/*" />
+                  </label>
+                  <div class="image-preview" id="previewImagen"></div>
+                </div>
+              </div>
+
               <button type="button" class="primary-btn full" id="btnConfirmar">Confirmar y pagar</button>
-              <p class="nota">Serás redirigido a Flow para completar el pago.</p>
+              <p class="nota">Pago seguro con Flow. Aceptamos tarjetas y transferencia.</p>
             </form>
           </section>
         </div>
