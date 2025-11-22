@@ -326,82 +326,222 @@ function getBadgeEstado(estado) {
   return badges[estado] || `<span class="badge">${estado}</span>`;
 }
 
-// Ver detalle de pedido (modal flotante)
+// Estados disponibles con info
+const ESTADOS_PEDIDO = {
+  pendiente_pago: { label: 'Pendiente Pago', icon: '⏳', color: '#f59e0b', next: 'pagado' },
+  pagado: { label: 'Pago Confirmado', icon: '✓', color: '#10b981', next: 'en_proceso' },
+  en_proceso: { label: 'En Preparación', icon: '🔨', color: '#3b82f6', next: 'terminado' },
+  terminado: { label: 'Listo', icon: '✨', color: '#8b5cf6', next: 'enviado' },
+  enviado: { label: 'Despachado', icon: '🚚', color: '#6366f1', next: 'entregado' },
+  entregado: { label: 'Entregado', icon: '🎉', color: '#059669', next: null },
+  cancelado: { label: 'Cancelado', icon: '✗', color: '#ef4444', next: null }
+};
+
+// Generar timeline visual del pedido
+function generarTimeline(estadoActual) {
+  const estados = ['pagado', 'en_proceso', 'terminado', 'enviado', 'entregado'];
+  const indexActual = estados.indexOf(estadoActual);
+
+  if (estadoActual === 'pendiente_pago' || estadoActual === 'cancelado') {
+    return `<div class="timeline-status ${estadoActual}">${ESTADOS_PEDIDO[estadoActual].icon} ${ESTADOS_PEDIDO[estadoActual].label}</div>`;
+  }
+
+  return `
+    <div class="order-timeline">
+      ${estados.map((estado, index) => {
+        const info = ESTADOS_PEDIDO[estado];
+        const isCompleted = index <= indexActual;
+        const isCurrent = index === indexActual;
+        return `
+          <div class="timeline-step ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''}">
+            <div class="timeline-icon" style="background: ${isCompleted ? info.color : '#e5e7eb'}">${info.icon}</div>
+            <span class="timeline-label">${info.label}</span>
+          </div>
+          ${index < estados.length - 1 ? '<div class="timeline-line ' + (index < indexActual ? 'completed' : '') + '"></div>' : ''}
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+// Ver detalle de pedido (modal flotante) - MEJORADO
 async function verDetallePedido(pedidoId) {
   const pedido = pedidosData.find(p => p.id === pedidoId);
   if (!pedido) return;
 
   const carrito = pedido.carrito_json || [];
+  const estadoInfo = ESTADOS_PEDIDO[pedido.estado] || ESTADOS_PEDIDO.pendiente_pago;
+
+  // Formatear teléfono para WhatsApp (quitar espacios y agregar +56)
+  const telefonoWhatsApp = pedido.telefono
+    ? pedido.telefono.replace(/\s/g, '').replace(/^0/, '').replace(/^\+?56/, '')
+    : null;
+  const whatsappLink = telefonoWhatsApp ? `https://wa.me/56${telefonoWhatsApp}` : null;
 
   const modalBody = document.getElementById('pedidoModalBody');
   modalBody.innerHTML = `
-    <div class="order-detail">
-      <div class="detail-section">
-        <h3>Información del Cliente</h3>
-        <div class="detail-row">
-          <span class="detail-label">Nombre:</span>
-          <span class="detail-value">${pedido.nombre_cliente}</span>
+    <div class="order-detail-enhanced">
+      <!-- Header con ID y Estado -->
+      <div class="order-header">
+        <div class="order-id">
+          <span class="order-id-label">Pedido</span>
+          <span class="order-id-value">#${pedido.id.substring(0, 8).toUpperCase()}</span>
         </div>
-        <div class="detail-row">
-          <span class="detail-label">Email:</span>
-          <span class="detail-value">${pedido.email}</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">Teléfono:</span>
-          <span class="detail-value">${pedido.telefono || 'No especificado'}</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">Dirección:</span>
-          <span class="detail-value">${pedido.direccion || 'No especificado'}</span>
+        <div class="order-status-badge" style="background: ${estadoInfo.color}">
+          ${estadoInfo.icon} ${estadoInfo.label}
         </div>
       </div>
 
-      <div class="detail-section">
-        <h3>Productos del Pedido</h3>
-        <div class="cart-items">
-          ${carrito.map(item => `
-            <div class="cart-item">
-              <div>
-                <div class="cart-item-name">${item.nombre}</div>
-                <div class="cart-item-price">Cantidad: ${item.cantidad}</div>
-              </div>
-              <div class="cart-item-price">${formatMoney(item.precio * item.cantidad)}</div>
+      <!-- Timeline Visual -->
+      <div class="timeline-container">
+        ${generarTimeline(pedido.estado)}
+      </div>
+
+      <!-- Grid de información -->
+      <div class="order-grid">
+        <!-- Cliente -->
+        <div class="order-card">
+          <div class="order-card-header">
+            <h3>👤 Cliente</h3>
+            <div class="contact-buttons">
+              ${whatsappLink ? `<a href="${whatsappLink}" target="_blank" class="btn-contact whatsapp" title="WhatsApp">💬</a>` : ''}
+              <a href="mailto:${pedido.email}" class="btn-contact email" title="Enviar Email">✉️</a>
             </div>
-          `).join('')}
+          </div>
+          <div class="order-card-body">
+            <div class="info-item">
+              <span class="info-icon">👤</span>
+              <div>
+                <span class="info-label">Nombre</span>
+                <span class="info-value">${pedido.nombre_cliente}</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <span class="info-icon">✉️</span>
+              <div>
+                <span class="info-label">Email</span>
+                <span class="info-value">${pedido.email}</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <span class="info-icon">📱</span>
+              <div>
+                <span class="info-label">Teléfono</span>
+                <span class="info-value">${pedido.telefono || 'No especificado'}</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <span class="info-icon">📍</span>
+              <div>
+                <span class="info-label">Dirección</span>
+                <span class="info-value">${pedido.direccion || 'No especificada'}</span>
+              </div>
+            </div>
+            ${pedido.comuna ? `
+              <div class="info-item">
+                <span class="info-icon">🏘️</span>
+                <div>
+                  <span class="info-label">Comuna</span>
+                  <span class="info-value">${pedido.comuna}</span>
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+
+        <!-- Productos -->
+        <div class="order-card">
+          <div class="order-card-header">
+            <h3>📦 Productos</h3>
+            <span class="items-count">${carrito.length} item${carrito.length > 1 ? 's' : ''}</span>
+          </div>
+          <div class="order-card-body">
+            <div class="products-list">
+              ${carrito.map(item => `
+                <div class="product-item">
+                  <div class="product-info">
+                    <span class="product-name">${item.nombre}</span>
+                    <span class="product-qty">x${item.cantidad}</span>
+                  </div>
+                  <span class="product-price">${formatMoney(item.precio * item.cantidad)}</span>
+                </div>
+              `).join('')}
+            </div>
+            <div class="order-total">
+              <span>Total</span>
+              <strong>${formatMoney(pedido.total)}</strong>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="detail-section">
-        <h3>Resumen del Pedido</h3>
-        <div class="detail-row">
-          <span class="detail-label">Fecha:</span>
-          <span class="detail-value">${formatDate(pedido.fecha)}</span>
+      <!-- Información adicional -->
+      <div class="order-extra">
+        <div class="extra-item">
+          <span class="extra-label">📅 Fecha del pedido</span>
+          <span class="extra-value">${formatDate(pedido.fecha)}</span>
         </div>
-        <div class="detail-row">
-          <span class="detail-label">Estado:</span>
-          <span class="detail-value">${getBadgeEstado(pedido.estado)}</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">Total:</span>
-          <span class="detail-value"><strong>${formatMoney(pedido.total)}</strong></span>
-        </div>
+        ${pedido.fecha_envio ? `
+          <div class="extra-item">
+            <span class="extra-label">🚚 Fecha de envío</span>
+            <span class="extra-value">${pedido.fecha_envio}</span>
+          </div>
+        ` : ''}
         ${pedido.mensaje ? `
-          <div class="detail-row">
-            <span class="detail-label">Mensaje:</span>
-            <span class="detail-value">${pedido.mensaje}</span>
+          <div class="extra-item full">
+            <span class="extra-label">💬 Mensaje del cliente</span>
+            <span class="extra-value message">"${pedido.mensaje}"</span>
+          </div>
+        ` : ''}
+        ${pedido.personalizacion ? `
+          <div class="extra-item full">
+            <span class="extra-label">✨ Personalización</span>
+            <span class="extra-value">${pedido.personalizacion}</span>
           </div>
         ` : ''}
       </div>
 
-      <div class="detail-section">
-        <h3>Cambiar Estado</h3>
-        <div class="estado-actions">
-          ${pedido.estado !== 'pagado' ? '<button class="btn-primary" onclick="actualizarEstado(\'' + pedido.id + '\', \'pagado\')">Marcar como Pagado</button>' : ''}
-          ${pedido.estado === 'pagado' ? '<button class="btn-primary" onclick="actualizarEstado(\'' + pedido.id + '\', \'en_proceso\')">Iniciar Proceso</button>' : ''}
-          ${pedido.estado === 'en_proceso' ? '<button class="btn-primary" onclick="actualizarEstado(\'' + pedido.id + '\', \'terminado\')">Marcar Terminado</button>' : ''}
-          ${pedido.estado === 'terminado' ? '<button class="btn-primary" onclick="actualizarEstado(\'' + pedido.id + '\', \'enviado\')">Marcar Enviado</button>' : ''}
-          ${pedido.estado === 'enviado' ? '<button class="btn-primary" onclick="actualizarEstado(\'' + pedido.id + '\', \'entregado\')">Marcar Entregado</button>' : ''}
-          ${pedido.estado !== 'cancelado' ? '<button class="btn-danger" onclick="actualizarEstado(\'' + pedido.id + '\', \'cancelado\')">Cancelar Pedido</button>' : ''}
+      <!-- Acciones -->
+      <div class="order-actions">
+        <h3>⚡ Acciones</h3>
+        <p class="actions-note">Al cambiar el estado, se enviará un email automático al cliente</p>
+        <div class="actions-grid">
+          ${pedido.estado === 'pendiente_pago' ? `
+            <button class="action-btn confirm" onclick="actualizarEstadoConEmail('${pedido.id}', 'pagado')">
+              <span class="action-icon">✓</span>
+              <span class="action-text">Confirmar Pago</span>
+            </button>
+          ` : ''}
+          ${pedido.estado === 'pagado' ? `
+            <button class="action-btn process" onclick="actualizarEstadoConEmail('${pedido.id}', 'en_proceso')">
+              <span class="action-icon">🔨</span>
+              <span class="action-text">Iniciar Preparación</span>
+            </button>
+          ` : ''}
+          ${pedido.estado === 'en_proceso' ? `
+            <button class="action-btn ready" onclick="actualizarEstadoConEmail('${pedido.id}', 'terminado')">
+              <span class="action-icon">✨</span>
+              <span class="action-text">Marcar como Listo</span>
+            </button>
+          ` : ''}
+          ${pedido.estado === 'terminado' ? `
+            <button class="action-btn ship" onclick="actualizarEstadoConEmail('${pedido.id}', 'enviado')">
+              <span class="action-icon">🚚</span>
+              <span class="action-text">Marcar Despachado</span>
+            </button>
+          ` : ''}
+          ${pedido.estado === 'enviado' ? `
+            <button class="action-btn deliver" onclick="actualizarEstadoConEmail('${pedido.id}', 'entregado')">
+              <span class="action-icon">🎉</span>
+              <span class="action-text">Confirmar Entrega</span>
+            </button>
+          ` : ''}
+          ${pedido.estado !== 'cancelado' && pedido.estado !== 'entregado' ? `
+            <button class="action-btn cancel" onclick="actualizarEstadoConEmail('${pedido.id}', 'cancelado')">
+              <span class="action-icon">✗</span>
+              <span class="action-text">Cancelar Pedido</span>
+            </button>
+          ` : ''}
         </div>
       </div>
     </div>
@@ -415,7 +555,54 @@ function cambiarEstadoPedido(pedidoId) {
   verDetallePedido(pedidoId);
 }
 
-// Actualizar estado
+// Actualizar estado CON envío de email al cliente
+async function actualizarEstadoConEmail(pedidoId, nuevoEstado) {
+  const pedido = pedidosData.find(p => p.id === pedidoId);
+  if (!pedido) return;
+
+  const estadoLabel = ESTADOS_PEDIDO[nuevoEstado]?.label || nuevoEstado;
+
+  // Confirmar acción
+  const confirmar = confirm(`¿Cambiar estado a "${estadoLabel}"?\n\nSe enviará un email automático a ${pedido.email}`);
+  if (!confirmar) return;
+
+  try {
+    // Mostrar loading
+    showToast('Actualizando estado y enviando email...', 'success');
+
+    const res = await fetch(`/api/admin/pedidos/${pedidoId}/estado`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-token': localStorage.getItem('adminToken')
+      },
+      body: JSON.stringify({
+        estado: nuevoEstado,
+        enviarEmail: true
+      })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || 'Error al actualizar estado');
+
+    if (data.emailEnviado) {
+      showToast(`Estado actualizado y email enviado a ${pedido.email}`, 'success');
+    } else {
+      showToast('Estado actualizado (email no configurado)', 'success');
+    }
+
+    closeModal('pedidoModal');
+    loadPedidos();
+    loadDashboard();
+
+  } catch (error) {
+    console.error('Error updating estado:', error);
+    showToast('Error al actualizar estado', 'error');
+  }
+}
+
+// Actualizar estado (sin email - legacy)
 async function actualizarEstado(pedidoId, nuevoEstado) {
   try {
     const res = await fetch(`/api/admin/pedidos/${pedidoId}/estado`, {
@@ -848,3 +1035,4 @@ window.cambiarEstadoPedido = cambiarEstadoPedido;
 window.actualizarEstado = actualizarEstado;
 window.editarProducto = editarProducto;
 window.eliminarProducto = eliminarProducto;
+window.actualizarEstadoConEmail = actualizarEstadoConEmail;

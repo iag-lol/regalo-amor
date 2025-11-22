@@ -921,7 +921,7 @@ app.post('/api/admin/config-envios', adminGuard, async (req, res) => {
 app.put('/api/admin/pedidos/:id/estado', adminGuard, async (req, res) => {
   try {
     const { id } = req.params;
-    const { estado, notas } = req.body;
+    const { estado, notas, enviarEmail } = req.body;
 
     const estadosValidos = ['pendiente_pago', 'pagado', 'en_proceso', 'terminado', 'enviado', 'entregado', 'cancelado'];
     if (!estadosValidos.includes(estado)) {
@@ -940,7 +940,43 @@ app.put('/api/admin/pedidos/:id/estado', adminGuard, async (req, res) => {
 
     if (error) throw error;
 
-    res.json({ ok: true, pedido: data });
+    // Enviar email si se solicita y hay configuración
+    let emailEnviado = false;
+    if (enviarEmail && data && process.env.EMAIL_HOST && process.env.EMAIL_USER) {
+      try {
+        const { generarEmailHTML, getEmailSubject } = await import('./emailTemplates.js');
+        const nodemailer = await import('nodemailer');
+
+        const transporter = nodemailer.default.createTransport({
+          host: process.env.EMAIL_HOST,
+          port: parseInt(process.env.EMAIL_PORT) || 587,
+          secure: process.env.EMAIL_SECURE === 'true',
+          auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+          }
+        });
+
+        const htmlContent = generarEmailHTML(data, estado);
+        const subject = getEmailSubject(estado, data.id);
+
+        if (htmlContent && data.email) {
+          await transporter.sendMail({
+            from: `"Regalo Amor" <${process.env.EMAIL_USER}>`,
+            to: data.email,
+            subject: subject,
+            html: htmlContent
+          });
+          emailEnviado = true;
+          console.log(`✓ Email enviado a ${data.email} - Estado: ${estado}`);
+        }
+      } catch (emailError) {
+        console.error('Error al enviar email:', emailError);
+        // No fallar si el email no se puede enviar
+      }
+    }
+
+    res.json({ ok: true, pedido: data, emailEnviado });
   } catch (error) {
     console.error('Error al actualizar estado de pedido:', error);
     res.status(500).json({ ok: false, error: 'Error al actualizar estado' });
