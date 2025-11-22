@@ -17,7 +17,34 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-app.use(express.static(path.join(__dirname, 'public')));
+
+// ============================================
+// ANTI-CACHE: Forzar que los archivos se actualicen siempre
+// ============================================
+app.use((req, res, next) => {
+  // Para archivos HTML, CSS, JS - NO CACHEAR
+  if (req.path.match(/\.(html|css|js)$/)) {
+    res.set({
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'Surrogate-Control': 'no-store',
+      'ETag': `"${Date.now()}"` // ETag único para forzar actualización
+    });
+  }
+  next();
+});
+
+app.use(express.static(path.join(__dirname, 'public'), {
+  etag: false,
+  lastModified: false,
+  setHeaders: (res, path) => {
+    // Doble seguro: headers en static también
+    if (path.match(/\.(html|css|js)$/)) {
+      res.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    }
+  }
+}));
 
 // Validar variables de entorno críticas
 const SUPABASE_URL = process.env.SUPABASE_URL;
