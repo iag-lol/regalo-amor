@@ -97,6 +97,29 @@ const elements = {
   refreshAdmin: document.getElementById('refreshAdmin'),
 };
 
+// Calcular descuento por cantidad para un producto
+const calcularDescuentoCantidad = (producto, cantidad) => {
+  const descuentos = producto.descuentos_cantidad || [];
+  if (!descuentos.length || cantidad < 2) return 0;
+
+  // Ordenar por cantidad descendente para encontrar el mejor descuento aplicable
+  const ordenados = [...descuentos].sort((a, b) => b.cantidad - a.cantidad);
+  const aplicable = ordenados.find(d => cantidad >= d.cantidad);
+
+  return aplicable ? aplicable.porcentaje : 0;
+};
+
+// Generar badge de descuento por cantidad
+const generarBadgeDescuento = (producto) => {
+  const descuentos = producto.descuentos_cantidad || [];
+  if (!descuentos.length) return '';
+
+  const primerDescuento = descuentos.sort((a, b) => a.cantidad - b.cantidad)[0];
+  if (!primerDescuento) return '';
+
+  return `<span class="discount-badge">Desde ${primerDescuento.cantidad}+ uds: ${primerDescuento.porcentaje}% OFF</span>`;
+};
+
 const renderProductos = (productos) => {
   elements.listaProductos.innerHTML = '';
   if (!productos.length) {
@@ -107,14 +130,36 @@ const renderProductos = (productos) => {
   productos.forEach((producto) => {
     const card = document.createElement('article');
     card.className = 'product-card';
+
+    // Badge de descuento general
+    const descuentoGeneral = producto.descuento > 0
+      ? `<span class="sale-badge">-${producto.descuento}%</span>`
+      : '';
+
+    // Badge de descuento por cantidad
+    const descuentoCantidad = generarBadgeDescuento(producto);
+
+    // Precio con descuento general
+    const precioFinal = producto.descuento > 0
+      ? producto.precio * (1 - producto.descuento / 100)
+      : producto.precio;
+
+    const precioHTML = producto.descuento > 0
+      ? `<p class="precio"><span class="precio-original">${currency(producto.precio)}</span> <span class="precio-descuento">${currency(precioFinal)}</span></p>`
+      : `<p class="precio">${currency(producto.precio)}</p>`;
+
     card.innerHTML = `
-      <img src="${producto.imagen_url || 'https://via.placeholder.com/400x300?text=Producto'}" alt="${producto.nombre}" />
-      <div>
+      <div class="product-image-container">
+        <img src="${producto.imagen_url || 'https://via.placeholder.com/400x300?text=Producto'}" alt="${producto.nombre}" />
+        ${descuentoGeneral}
+      </div>
+      <div class="product-info">
         <p class="categoria">${producto.categoria || 'Colección'}</p>
         <h3>${producto.nombre}</h3>
-        <p>${producto.descripcion || ''}</p>
+        <p class="descripcion">${producto.descripcion || ''}</p>
+        ${descuentoCantidad}
       </div>
-      <p>${currency(producto.precio)}</p>
+      ${precioHTML}
       <button class="cta" data-producto="${producto.id}">Agregar</button>
     `;
     elements.listaProductos.append(card);
@@ -156,7 +201,9 @@ const addToCart = (productoId) => {
       nombre: producto.nombre,
       cantidad: 1,
       precioUnitario: producto.precio,
-      imagenUrl: producto.imagen_url, // Agregar imagen del producto
+      imagenUrl: producto.imagen_url,
+      descuentoGeneral: producto.descuento || 0,
+      descuentosCantidad: producto.descuentos_cantidad || [],
     });
   }
   showToast('Producto agregado al carrito', 'success');
@@ -173,35 +220,96 @@ const updateQuantity = (productoId, delta) => {
   renderCart();
 };
 
+// Calcular descuento por cantidad de un item del carrito
+const calcularDescuentoItem = (item) => {
+  const descuentos = item.descuentosCantidad || [];
+  if (!descuentos.length || item.cantidad < 2) return 0;
+
+  const ordenados = [...descuentos].sort((a, b) => b.cantidad - a.cantidad);
+  const aplicable = ordenados.find(d => item.cantidad >= d.cantidad);
+
+  return aplicable ? aplicable.porcentaje : 0;
+};
+
 const renderCart = () => {
   elements.cartItems.innerHTML = '';
-  let total = 0;
+  let subtotal = 0;
+  let totalDescuento = 0;
+
   if (!state.carrito.length) {
     elements.cartItems.innerHTML = '<p class="nota">Aún no agregas productos.</p>';
   }
 
   state.carrito.forEach((item) => {
-    total += item.cantidad * item.precioUnitario;
+    // Calcular precio base (con descuento general si existe)
+    const precioBase = item.descuentoGeneral > 0
+      ? item.precioUnitario * (1 - item.descuentoGeneral / 100)
+      : item.precioUnitario;
+
+    // Calcular descuento por cantidad
+    const descuentoCantidad = calcularDescuentoItem(item);
+    const precioConDescuentoCantidad = descuentoCantidad > 0
+      ? precioBase * (1 - descuentoCantidad / 100)
+      : precioBase;
+
+    const subtotalItem = precioBase * item.cantidad;
+    const totalItem = precioConDescuentoCantidad * item.cantidad;
+    const ahorroItem = subtotalItem - totalItem;
+
+    subtotal += subtotalItem;
+    totalDescuento += ahorroItem;
+
     const row = document.createElement('div');
     row.className = 'cart-line';
+
+    // Mostrar badge de descuento si aplica
+    const descuentoBadge = descuentoCantidad > 0
+      ? `<span class="cart-discount-badge">-${descuentoCantidad}%</span>`
+      : '';
+
+    // Mostrar precio original tachado si hay descuento
+    const precioHTML = descuentoCantidad > 0
+      ? `
+        <div class="cart-line-pricing">
+          <span class="cart-precio-original">${currency(precioBase * item.cantidad)}</span>
+          <span class="cart-precio-final">${currency(totalItem)}</span>
+        </div>
+      `
+      : `<span class="cart-precio-final">${currency(totalItem)}</span>`;
+
     row.innerHTML = `
       ${item.imagenUrl ? `<img src="${item.imagenUrl}" alt="${item.nombre}" class="cart-line-image" />` : ''}
       <div class="cart-line-info">
         <strong>${item.nombre}</strong>
-        <p>${currency(item.precioUnitario)} x ${item.cantidad}</p>
+        <p>${currency(precioConDescuentoCantidad)} x ${item.cantidad} ${descuentoBadge}</p>
       </div>
-      <div class="cart-actions">
-        <button data-action="dec" data-id="${item.productoId}" aria-label="Restar">-</button>
-        <button data-action="inc" data-id="${item.productoId}" aria-label="Sumar">+</button>
+      <div class="cart-line-right">
+        ${precioHTML}
+        <div class="cart-actions">
+          <button data-action="dec" data-id="${item.productoId}" aria-label="Restar">-</button>
+          <span class="cart-qty">${item.cantidad}</span>
+          <button data-action="inc" data-id="${item.productoId}" aria-label="Sumar">+</button>
+        </div>
       </div>
     `;
     elements.cartItems.append(row);
   });
 
+  const totalFinal = subtotal - totalDescuento;
   const totalItems = state.carrito.reduce((acc, item) => acc + item.cantidad, 0);
-  elements.cartTotal.textContent = currency(total);
-  if (elements.checkoutTotal) elements.checkoutTotal.textContent = currency(total);
+
+  // Mostrar ahorro si hay descuentos
+  const ahorroHTML = totalDescuento > 0
+    ? `<div class="cart-savings">Ahorras: ${currency(totalDescuento)}</div>`
+    : '';
+
+  elements.cartTotal.innerHTML = `${currency(totalFinal)}${ahorroHTML}`;
+  if (elements.checkoutTotal) elements.checkoutTotal.innerHTML = `${currency(totalFinal)}${ahorroHTML}`;
   elements.cartCount.textContent = `${totalItems} ${totalItems === 1 ? 'producto' : 'productos'}`;
+
+  // Guardar el total calculado para el checkout
+  state.totalCalculado = totalFinal;
+
   const disabled = state.carrito.length === 0;
   if (elements.openCheckout) {
     elements.openCheckout.disabled = disabled;
@@ -284,8 +392,27 @@ const collectFormData = () => {
   if (payload.telefonoEsMismo) {
     payload.telefonoLlamada = payload.telefonoWsp;
   }
-  payload.total = state.carrito.reduce((acc, item) => acc + item.precioUnitario * item.cantidad, 0);
-  payload.carrito = state.carrito;
+
+  // Usar el total calculado con descuentos
+  payload.total = state.totalCalculado || state.carrito.reduce((acc, item) => {
+    const precioBase = item.descuentoGeneral > 0
+      ? item.precioUnitario * (1 - item.descuentoGeneral / 100)
+      : item.precioUnitario;
+    const descuentoCantidad = calcularDescuentoItem(item);
+    const precioFinal = descuentoCantidad > 0
+      ? precioBase * (1 - descuentoCantidad / 100)
+      : precioBase;
+    return acc + precioFinal * item.cantidad;
+  }, 0);
+
+  payload.carrito = state.carrito.map(item => ({
+    ...item,
+    precio: item.precioUnitario,
+    precioConDescuento: calcularDescuentoItem(item) > 0
+      ? item.precioUnitario * (1 - calcularDescuentoItem(item) / 100)
+      : item.precioUnitario,
+  }));
+
   payload.mensajePersonalizacion = elements.mensajePersonalizacion.value.trim();
   payload.tipoDiseno = elements.tipoDiseno.value;
   payload.imagenBase64 = state.imagenBase64;

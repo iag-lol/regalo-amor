@@ -1903,6 +1903,215 @@ textarea:focus {
   transform: translateY(0);
 }
 
+/* ============================================
+   DESCUENTOS Y BADGES
+   ============================================ */
+
+/* Container de imagen del producto */
+.product-image-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+}
+
+.product-image-container img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Badge de descuento general (esquina) */
+.sale-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+}
+
+/* Badge de descuento por cantidad */
+.discount-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-top: 0.75rem;
+}
+
+/* Precios en productos */
+.product-card .precio {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0.5rem 0;
+}
+
+.product-card .precio-original {
+  text-decoration: line-through;
+  color: var(--muted);
+  font-size: 1rem;
+  font-weight: 400;
+  margin-right: 0.5rem;
+}
+
+.product-card .precio-descuento {
+  color: #059669;
+}
+
+/* Product info container */
+.product-info {
+  padding: 1rem 0;
+}
+
+.product-info .descripcion {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0.5rem 0;
+}
+
+/* Cart line improvements */
+.cart-line {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--bg-soft);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+}
+
+.cart-line-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.cart-line-pricing {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.cart-precio-original {
+  text-decoration: line-through;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.cart-precio-final {
+  font-weight: 700;
+  color: var(--ink);
+  font-size: 1rem;
+}
+
+/* Badge de descuento en el carrito */
+.cart-discount-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+/* Cantidad en el carrito */
+.cart-qty {
+  min-width: 28px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+/* Cart actions mejorado */
+.cart-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: white;
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  border: 1px solid var(--border);
+}
+
+.cart-actions button {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  font-size: 1.125rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  color: var(--ink);
+}
+
+.cart-actions button:hover {
+  background: var(--accent-faint);
+  color: var(--accent);
+}
+
+/* Ahorro total */
+.cart-savings {
+  display: block;
+  font-size: 0.8125rem;
+  color: #059669;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* Mobile adjustments for discounts */
+@media (max-width: 768px) {
+  .sale-badge {
+    top: 8px;
+    right: 8px;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+  }
+
+  .discount-badge {
+    font-size: 0.6875rem;
+    padding: 4px 10px;
+  }
+
+  .cart-line {
+    flex-wrap: wrap;
+  }
+
+  .cart-line-right {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 8px;
+    border-top: 1px solid var(--border-light);
+    margin-top: 8px;
+  }
+
+  .cart-line-pricing {
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+  }
+}
+
 /* Print styles */
 @media print {
   .main-header,
